@@ -1,0 +1,7 @@
+{
+  'log_path': Log/test_no.log,
+  'no_dict': ../pkl/no_dict.pkl,
+  'test_pkl_path': ../pkl/test.pkl,
+  'file_type': parquet,
+  'output_path': ../results/no_test.csv
+}

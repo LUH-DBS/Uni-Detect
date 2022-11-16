@@ -1,0 +1,8 @@
+{
+  'log_path': Log/test_se.log,
+  'uv_pkl_path': ../pkl/se_dict.pkl,
+  'test_pkl_path': ../pkl/test.pkl,
+  'file_type': parquet,
+  'output_path': ../results/se_test.csv,
+  'tokens_pkl_path': ../pkl/tokens_dict.pkl
+}

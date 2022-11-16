@@ -1,0 +1,6 @@
+{
+  'log_path': Log/offline_se,
+  'train_pkl_path': pkl/train.pkl,
+  'file_type': parquet,
+  'output_path': pkl/se_dict.pkl
+}
