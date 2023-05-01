@@ -120,8 +120,8 @@ def se_offline_learning(train, file_type, output_path):
                     se_dict[col_id] = se.get_col_measures(col)
                 count += 1
                 if count % 100 == 0:
-                    logging.info("se_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
+                    logging.info(f"se_count: {count}")
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             logging.error(e, path)
     # Save results
@@ -150,8 +150,8 @@ def uv_offline_learning(train, file_type, output_path):
                                                           tokens_dict)
             count += 1
             if count % 100 == 0:
-                print("uv_count", count)
-            logging.info("df shape: ", train_df.shape)
+                logging.info(f"uv_count: {count}")
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             logging.error(e, path)
     with open(output_path, 'wb') as f:
@@ -179,8 +179,8 @@ def fd_offline_learning(train, file_type, output_path):
                                                            list(train_df.columns).index(pair[1]), tokens_dict)
             count += 1
             if count % 100 == 0:
-                logging.info("fd_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
+                logging.info(f"fd_count: {count}")
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             logging.error(e, path)
     with open(output_path, 'wb') as f:
