@@ -1,6 +1,6 @@
 {
   'log_path': Log/offline_no,
-  'train_pkl_path': /Users/fatemehahmadi/Documents/Github-Private/Fatemeh/Uni-Detect/pkl/train.pkl,
-  'file_type': parquet,
-  'output_path': /Users/fatemehahmadi/Documents/Github-Private/Fatemeh/Uni-Detect/pkl/no_dict.pkl
+  'train_pkl_path': train_path.pkl,
+  'file_type': csv,
+  'output_path': output/no_dict.pkl
 }

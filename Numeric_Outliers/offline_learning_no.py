@@ -1,4 +1,7 @@
 import time
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('.')))
 import ud_utils as udt
 import warnings
 import pickle
@@ -21,4 +24,4 @@ with warnings.catch_warnings():
     t0 = time.time()
     udt.no_offline_learning(train, config['file_type'], config['output_path'])
     t1 = time.time()
-    logging.info("No Time:", t1-t0)
+    logging.info(f"No Time: {t1-t0}")

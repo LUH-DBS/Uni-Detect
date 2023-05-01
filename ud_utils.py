@@ -79,7 +79,7 @@ def no_offline_learning(train, file_type, output_path):
             count += 1
             if count % 100 == 0:
                 logging.info("no_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             print(e)
             print(path)
