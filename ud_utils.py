@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Pool, cpu_count
 import pandas as pd
 import numpy as np
@@ -85,7 +86,7 @@ def no_offline_learning(train, file_type, output_path):
     no_dict = {}
 
     # Use multiprocessing to apply the function to each path in parallel
-    with Pool(processes=cpu_count()) as p:
+    with Pool(processes=cpu_count()*2) as p:
         path_no_dicts = p.starmap(no_process_path, ((path, file_type) for path in train))
         
     # Merge the results into a single dictionary
@@ -97,24 +98,35 @@ def no_offline_learning(train, file_type, output_path):
         pickle.dump(no_dict, f)
     return no_dict
 
-def se_process_path(path, file_type):
+def se_process_col(path, col_name, train_df):
+    col_id = path + "_" + col_name
+    col = train_df[col_name]
+    col_measures = None
+    # Ignore empty cols
+    if not col.empty:
+        # Get column measures using the provided function
+        col_measures = se.get_col_measures(col)
+    logging.info(f"Finish col_id: {col_id} df: {path}")
+    return col_id, col_measures
+
+
+def se_process_path(path, file_type, executor):
     try:
         if file_type == "parquet":
             train_df = pd.read_parquet(path + "/clean.parquet")
         else:
             train_df = pd.read_csv(path)
-        # Select non-numeric cols
-        to_be_dropped = train_df.select_dtypes([np.number])
-        train_df_se = train_df.drop(to_be_dropped, axis=1)
+        
+        executor_features = []
+        for col_name in train_df.columns:
+            executor_features.append(executor.submit(se_process_col, path, col_name, train_df))
+
         path_dict = {}
-        for col_name in train_df_se.columns:
-            col_id = path + "_" + col_name
-            col = train_df_se[col_name]
-            # Ignore empty cols
-            if not col.empty:
-                # Get column measures using the provided function
-                path_dict[col_id] = se.get_col_measures(col)
-        logging.info(f"df shape: {train_df.shape}")
+        for feature in executor_features:
+            col_id, col_measures = feature.result()
+            if col_measures is not None:
+                path_dict[col_id] = col_measures
+        logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_dict
     except Exception as e:
         logging.error(e)
@@ -123,11 +135,16 @@ def se_process_path(path, file_type):
 
 def se_offline_learning(train, file_type, output_path):
     se_dict = {}
-    with Pool() as p:
-        path_se_dicts = p.starmap(se_process_path, ((path, file_type) for path in train))
-    for path_dict in path_se_dicts:
-        se_dict.update(path_dict)
+    with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
+        executor_features = []
+        for path in train:
+            executor_features.append(executor.submit(se_process_path, path, file_type, executor))
+        for feature in executor_features:
+            path_dict = feature.result()
+            if path_dict is not None:
+                se_dict.update(path_dict)
     with open(output_path, 'wb') as f:
+        logging.info(f"Writting se_dict")
         pickle.dump(se_dict, f)
     return se_dict
 

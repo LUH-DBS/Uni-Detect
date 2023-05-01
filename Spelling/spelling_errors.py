@@ -40,6 +40,24 @@ def get_mpd(column):
     avg_len_diff_tokens = udt.get_range_mpd(avg_diff_tokens) if avg_diff_tokens else -1
     return mpd, i_p, j_p, avg_len_diff_tokens
 
+def get_mpd(column):
+    transformed_col = column.values.reshape(-1, 1)
+    try:
+        distance_matrix = pdist(transformed_col, metric='euclidean')
+    except Exception as e:
+        print(e)
+        return
+    sdm = squareform(distance_matrix)
+    np.fill_diagonal(sdm, np.inf)
+    mpd = np.nanmin(sdm)
+    idx = np.unravel_index(sdm.argmin(), sdm.shape)
+    if idx:
+        i_p, j_p = idx[0], idx[1]
+    else:
+        i_p, j_p = -1, -1
+    avg_diff_tokens = get_avg_diff_tokens(column.iloc[i_p], column.iloc[j_p])
+    avg_len_diff_tokens = udt.get_range_mpd(avg_diff_tokens) if avg_diff_tokens else -1
+    return mpd, i_p, j_p, avg_len_diff_tokens
 
 def get_col_measures(col):
     col_perturbed = perturbation(col)
@@ -52,6 +70,7 @@ def get_col_measures(col):
 
 
 def perturbation(column):
+    column = column.astype(str)
     mpd_d, i_p, j_p, avg_len_diff_tokens = get_mpd(column)
     if i_p == -1 or j_p == -1 or avg_len_diff_tokens == -1 or mpd_d == np.inf:
         return
