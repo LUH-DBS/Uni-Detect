@@ -1,8 +1,10 @@
 import time
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join('.')))
 import ud_utils as udt
 import warnings
 import pickle
-import sys
 import logging
 import yaml
 
@@ -21,4 +23,4 @@ with warnings.catch_warnings():
     t0 = time.time()
     udt.se_offline_learning(train, config['file_type'], config['output_path'])
     t1 = time.time()
-    logging.info("SE Time:", t1-t0)
+    logging.info(f"SE Time: {t1-t0}")

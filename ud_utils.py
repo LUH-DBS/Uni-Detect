@@ -58,7 +58,7 @@ def get_tokens_dict(train_path):
     return tokens_dict
 
 # Define the function to be applied to each path
-def process_path(path, file_type):
+def no_process_path(path, file_type):
     try:
         if file_type == "parquet":
             train_df = pd.read_parquet(path + "/clean.parquet")
@@ -86,7 +86,7 @@ def no_offline_learning(train, file_type, output_path):
 
     # Use multiprocessing to apply the function to each path in parallel
     with Pool(processes=cpu_count()) as p:
-        path_no_dicts = p.starmap(process_path, ((path, file_type) for path in train))
+        path_no_dicts = p.starmap(no_process_path, ((path, file_type) for path in train))
         
     # Merge the results into a single dictionary
     for path_no_dict in path_no_dicts:
@@ -97,38 +97,39 @@ def no_offline_learning(train, file_type, output_path):
         pickle.dump(no_dict, f)
     return no_dict
 
+def se_process_path(path, file_type):
+    try:
+        if file_type == "parquet":
+            train_df = pd.read_parquet(path + "/clean.parquet")
+        else:
+            train_df = pd.read_csv(path)
+        # Select non-numeric cols
+        to_be_dropped = train_df.select_dtypes([np.number])
+        train_df_se = train_df.drop(to_be_dropped, axis=1)
+        path_dict = {}
+        for col_name in train_df_se.columns:
+            col_id = path + "_" + col_name
+            col = train_df_se[col_name]
+            # Ignore empty cols
+            if not col.empty:
+                # Get column measures using the provided function
+                path_dict[col_id] = se.get_col_measures(col)
+        logging.info(f"df shape: {train_df.shape}")
+        return path_dict
+    except Exception as e:
+        logging.error(e)
+        logging.info(f"Error processing path {path}")
+        return {}
 
 def se_offline_learning(train, file_type, output_path):
-    # Number of processed columns
-    count = 0
     se_dict = {}
-    for path in train:
-        try:
-            if file_type == "parquet":
-                train_df = pd.read_parquet(path + "/clean.parquet")
-            else:
-                train_df = pd.read_csv(path)
-            # Select non-numeric cols
-            to_be_dropped = train_df.select_dtypes([np.number])
-            train_df_se = train_df.drop(to_be_dropped, axis=1)
-            for col_name in train_df_se.columns:
-                col_id = path + "_" + col_name
-                col = train_df_se[col_name]
-                # Ignore empty cols
-                if not col.empty:
-                    # Get column measures
-                    se_dict[col_id] = se.get_col_measures(col)
-                count += 1
-                if count % 100 == 0:
-                    logging.info(f"se_count: {count}")
-            logging.info(f"df shape: {train_df.shape}")
-        except Exception as e:
-            logging.error(e, path)
-    # Save results
+    with Pool() as p:
+        path_se_dicts = p.starmap(se_process_path, ((path, file_type) for path in train))
+    for path_dict in path_se_dicts:
+        se_dict.update(path_dict)
     with open(output_path, 'wb') as f:
         pickle.dump(se_dict, f)
     return se_dict
-
 
 def uv_offline_learning(train, file_type, output_path):
     # Number of processed columns
