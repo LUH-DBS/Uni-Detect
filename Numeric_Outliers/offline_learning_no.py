@@ -1,27 +1,64 @@
-import time
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join('.')))
-import ud_utils as udt
-import warnings
-import pickle
-import yaml
+
+from concurrent.futures import Executor, ThreadPoolExecutor
 import logging
-import sys
+from multiprocessing import Pool
+import pickle
+from joblib import cpu_count
+import numpy as np
+import pandas as pd
+import numeric_outliers as no
 
-with open(sys.argv[1]) as config_file:
-    config = yaml.load(config_file, Loader=yaml.SafeLoader)
+def no_process_col(path, col_name, train_df):
+    try:
+        col_id = path + "_" + col_name
+        col = train_df[col_name]
+        # Ignore empty cols
+        if not col.empty:
+            # Get column measures
+            col_measures = no.get_col_measures(col)
+            return col_id, col_measures
+        return col_id, None
+    except Exception as e:
+        logging.error(f"Error processing column {col_name}: {e}")
+        return col_id, None
+    
+# Define the function to be applied to each path
+def no_process_path(path, file_type, executor):
+    try:
+        if file_type == "parquet":
+            train_df = pd.read_parquet(path + "/clean.parquet")
+        else:
+            train_df = pd.read_csv(path)
+        
+        # numeric outliers
+        train_df_no = train_df.select_dtypes(include=[np.number])
+        path_no_dict = {}
+        executor_features = []
+        for col_name in train_df_no.columns:
+            executor_features.append(executor.submit(no_process_col, path, col_name, train_df_no))
 
-logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
-                    format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+        for feature in executor_features:
+            col_id, col_measures = feature.result()
+            path_no_dict[col_id] = col_measures
 
-with open(config['train_pkl_path'], 'rb') as f:
-    train = pickle.load(f)
-    logging.info("train pickle file loaded.")
+        logging.info(f"df shape: {train_df.shape}")
+        return path_no_dict
+    except Exception as e:
+        logging.error(f"Error processing path {path}: {e}")
+        return {}
+        
+def no_offline_learning(train, file_type, output_path):
+    no_dict = {}
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=RuntimeWarning)
-    t0 = time.time()
-    udt.no_offline_learning(train, config['file_type'], config['output_path'])
-    t1 = time.time()
-    logging.info(f"No Time: {t1-t0}")
+    with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
+        executor_features = []
+        for path in train:
+            executor_features.append(executor.submit(no_process_path, path, file_type, executor))
+        for feature in executor_features:
+            path_dict = feature.result()
+            no_dict.update(path_dict)
+    
+    # Save the dictionary to disk
+    with open(output_path, 'wb') as f:
+        pickle.dump(no_dict, f)
+    return no_dict

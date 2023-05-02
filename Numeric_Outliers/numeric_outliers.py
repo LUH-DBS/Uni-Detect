@@ -1,6 +1,9 @@
 import numpy
 from scipy import stats
 import numpy as np
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join('.')))
 import ud_utils as udt
 
 

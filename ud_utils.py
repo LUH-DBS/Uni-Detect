@@ -58,45 +58,6 @@ def get_tokens_dict(train_path):
         pickle.dump(tokens_dict, f)
     return tokens_dict
 
-# Define the function to be applied to each path
-def no_process_path(path, file_type):
-    try:
-        if file_type == "parquet":
-            train_df = pd.read_parquet(path + "/clean.parquet")
-        else:
-            train_df = pd.read_csv(path)
-        
-        # numeric outliers
-        train_df_no = train_df.select_dtypes(include=[np.number])
-        path_no_dict = {}
-        for col_name in train_df_no.columns:
-            col_id = path + "_" + col_name
-            col = train_df_no[col_name]
-            # Ignore empty cols
-            if not col.empty:
-                # Get column measures
-                path_no_dict[col_id] = no.get_col_measures(col)
-        logging.info(f"df shape: {train_df.shape}")
-        return path_no_dict
-    except Exception as e:
-        logging.error(f"Error processing path {path}: {e}")
-        return {}
-        
-def no_offline_learning(train, file_type, output_path):
-    no_dict = {}
-
-    # Use multiprocessing to apply the function to each path in parallel
-    with Pool(processes=cpu_count()*2) as p:
-        path_no_dicts = p.starmap(no_process_path, ((path, file_type) for path in train))
-        
-    # Merge the results into a single dictionary
-    for path_no_dict in path_no_dicts:
-        no_dict.update(path_no_dict)
-        
-    # Save the dictionary to disk
-    with open(output_path, 'wb') as f:
-        pickle.dump(no_dict, f)
-    return no_dict
 
 def se_process_col(path, col_name, train_df):
     col_id = path + "_" + col_name
