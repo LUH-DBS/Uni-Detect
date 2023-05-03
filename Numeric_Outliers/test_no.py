@@ -29,7 +29,7 @@ with open(config['no_dict'], 'rb') as f:
 
 no_results = pd.DataFrame(
     columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
-
+file_type = config['file_type']
 output_path = config['output_path']
 tables_output_path = os.path.join(output_path, "no_tables_test_results")
 if not os.path.exists(tables_output_path):
@@ -53,35 +53,36 @@ for path in test:
             # Compare the test column with the train columns
             if max_mad_test_d != max_mad_test_do:
                 for col_id in no_dict.keys():
-                    # Check the data type
-                    if no_dict[col_id]["d_type"] != test_column.dtype:
-                        continue
-                    # Check the number of row range
-                    if no_dict[col_id]["number_of_rows_range"] != number_of_rows_range:
-                        continue
+                    if no_dict[col_id]['max_mad'] is not None:
+                        # Check the data type
+                        if no_dict[col_id]["d_type"] != test_column.dtype:
+                            continue
+                        # Check the number of row range
+                        if no_dict[col_id]["number_of_rows_range"] != number_of_rows_range:
+                            continue
 
-                    max_mad_train_d, max_mad_train_do = no_dict[col_id]["max_mad"], no_dict[col_id]["max_mad_p"]
-                    tr_p = no.perturbation(no_dict[col_id]["col_transformed"])
+                        max_mad_train_d, max_mad_train_do = no_dict[col_id]["max_mad"], no_dict[col_id]["max_mad_p"]
+                        tr_p = no.perturbation(no_dict[col_id]["col_transformed"])
 
-                    # Checking whether the log transform better fits the data
-                    if tr_p:
-                        max_mad_train_transformed_d, max_mad_train_transformed_do, max_idx_t = \
-                            tr_p[0], tr_p[1], tr_p[2]
-                    else:
-                        max_mad_train_transformed_d, max_mad_train_transformed_do = np.inf, np.inf
+                        # Checking whether the log transform better fits the data
+                        if tr_p != (None, None, None):
+                            max_mad_train_transformed_d, max_mad_train_transformed_do, max_idx_t = \
+                                tr_p[0], tr_p[1], tr_p[2]
+                        else:
+                            max_mad_train_transformed_d, max_mad_train_transformed_do = np.inf, np.inf
 
-                    
-                    if max_mad_train_d >= max_mad_test_do:
-                        p_dt = p_dt + 1
-                    # before perturbation the max_mad is greater than or equal to max_mad_c(theta_1) and
-                    # after perturbation the max_mad is less than or equal to max_mad_c(theta_2)
-                    if max_mad_train_d >= max_mad_test_d and max_mad_train_do <= max_mad_test_do:
-                        p_dot = p_dot + 1
+                        
+                        if max_mad_train_d >= max_mad_test_do:
+                            p_dt = p_dt + 1
+                        # before perturbation the max_mad is greater than or equal to max_mad_c(theta_1) and
+                        # after perturbation the max_mad is less than or equal to max_mad_c(theta_2)
+                        if max_mad_train_d >= max_mad_test_d and max_mad_train_do <= max_mad_test_do:
+                            p_dot = p_dot + 1
 
-                    if max_mad_train_transformed_d >= max_mad_test_do:
-                        p_t_dt = p_t_dt + 1
-                    if max_mad_train_transformed_d >= max_mad_test_d and max_mad_train_transformed_do <= max_mad_test_do:
-                        p_t_dot = p_t_dot + 1
+                        if max_mad_train_transformed_d >= max_mad_test_do:
+                            p_t_dt = p_t_dt + 1
+                        if max_mad_train_transformed_d >= max_mad_test_d and max_mad_train_transformed_do <= max_mad_test_do:
+                            p_t_dot = p_t_dot + 1
 
                 lr = p_dot / p_dt if p_dt else -np.inf
                 lr_t = p_t_dot / p_t_dt if p_t_dt else -np.inf
@@ -109,10 +110,10 @@ for path in test:
                        
             no_results.loc[len(no_results)] = row
 
-        with open(os.path.join(tables_output_path, path), 'wb') as f:
+        with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
             pickle.dump(no_results, f)
     except Exception as e:
-        logging.info(f"Error in {path}")
+        logging.info(f"Error in {path}: {e}")
 no_results.to_csv(os.path.join(config['output_path'], "no_test_results.csv"))
 t1 = time.time()
 logging.info(f"no test time: {t1-t0}") 
