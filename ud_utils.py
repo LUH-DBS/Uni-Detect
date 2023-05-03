@@ -59,55 +59,6 @@ def get_tokens_dict(train_path):
     return tokens_dict
 
 
-def se_process_col(path, col_name, train_df):
-    col_id = path + "_" + col_name
-    col = train_df[col_name]
-    col_measures = None
-    # Ignore empty cols
-    if not col.empty:
-        # Get column measures using the provided function
-        col_measures = se.get_col_measures(col)
-    logging.info(f"Finish col_id: {col_id} df: {path}")
-    return col_id, col_measures
-
-
-def se_process_path(path, file_type, executor):
-    try:
-        if file_type == "parquet":
-            train_df = pd.read_parquet(path + "/clean.parquet")
-        else:
-            train_df = pd.read_csv(path)
-        
-        executor_features = []
-        for col_name in train_df.columns:
-            executor_features.append(executor.submit(se_process_col, path, col_name, train_df))
-
-        path_dict = {}
-        for feature in executor_features:
-            col_id, col_measures = feature.result()
-            if col_measures is not None:
-                path_dict[col_id] = col_measures
-        logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
-        return path_dict
-    except Exception as e:
-        logging.error(e)
-        logging.info(f"Error processing path {path}")
-        return {}
-
-def se_offline_learning(train, file_type, output_path):
-    se_dict = {}
-    with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        executor_features = []
-        for path in train:
-            executor_features.append(executor.submit(se_process_path, path, file_type, executor))
-        for feature in executor_features:
-            path_dict = feature.result()
-            if path_dict is not None:
-                se_dict.update(path_dict)
-    with open(output_path, 'wb') as f:
-        logging.info(f"Writting se_dict")
-        pickle.dump(se_dict, f)
-    return se_dict
 
 def uv_offline_learning(train, file_type, output_path):
     # Number of processed columns
