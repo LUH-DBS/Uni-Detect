@@ -2,5 +2,5 @@
   'log_path': Log/offline_no,
   'train_pkl_path': train_path.pkl,
   'file_type': csv,
-  'output_path': output/no_dict.pkl
+  'output_path': output
 }
