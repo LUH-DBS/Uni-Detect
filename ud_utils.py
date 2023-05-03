@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Pool, cpu_count
 import pandas as pd
 import numpy as np
 from Numeric_Outliers import numeric_outliers as no
@@ -57,68 +59,6 @@ def get_tokens_dict(train_path):
     return tokens_dict
 
 
-def no_offline_learning(train, file_type, output_path):
-    # Number of processed columns
-    count = 0
-    no_dict = {}
-    for path in train:
-        try:
-            if file_type == "parquet":
-                train_df = pd.read_parquet(path + "/clean.parquet")
-            else:
-                train_df = pd.read_csv(path)
-            # numeric outliers
-            train_df_no = train_df.select_dtypes(include=[np.number])
-            for col_name in train_df_no.columns:
-                col_id = path + "_" + col_name
-                col = train_df_no[col_name]
-                # Ignore empty cols
-                if not col.empty:
-                    # Get column measures
-                    no_dict[col_id] = no.get_col_measures(col)
-            count += 1
-            if count % 100 == 0:
-                logging.info("no_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
-        except Exception as e:
-            print(e)
-            print(path)
-    with open(output_path, 'wb') as f:
-        pickle.dump(no_dict, f)
-    return no_dict
-
-
-def se_offline_learning(train, file_type, output_path):
-    # Number of processed columns
-    count = 0
-    se_dict = {}
-    for path in train:
-        try:
-            if file_type == "parquet":
-                train_df = pd.read_parquet(path + "/clean.parquet")
-            else:
-                train_df = pd.read_csv(path)
-            # Select non-numeric cols
-            to_be_dropped = train_df.select_dtypes([np.number])
-            train_df_se = train_df.drop(to_be_dropped, axis=1)
-            for col_name in train_df_se.columns:
-                col_id = path + "_" + col_name
-                col = train_df_se[col_name]
-                # Ignore empty cols
-                if not col.empty:
-                    # Get column measures
-                    se_dict[col_id] = se.get_col_measures(col)
-                count += 1
-                if count % 100 == 0:
-                    logging.info("se_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
-        except Exception as e:
-            logging.error(e, path)
-    # Save results
-    with open(output_path, 'wb') as f:
-        pickle.dump(se_dict, f)
-    return se_dict
-
 
 def uv_offline_learning(train, file_type, output_path):
     # Number of processed columns
@@ -140,8 +80,8 @@ def uv_offline_learning(train, file_type, output_path):
                                                           tokens_dict)
             count += 1
             if count % 100 == 0:
-                print("uv_count", count)
-            logging.info("df shape: ", train_df.shape)
+                logging.info(f"uv_count: {count}")
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             logging.error(e, path)
     with open(output_path, 'wb') as f:
@@ -169,8 +109,8 @@ def fd_offline_learning(train, file_type, output_path):
                                                            list(train_df.columns).index(pair[1]), tokens_dict)
             count += 1
             if count % 100 == 0:
-                logging.info("fd_count: " + str(count))
-            logging.info("df shape: ", train_df.shape)
+                logging.info(f"fd_count: {count}")
+            logging.info(f"df shape: {train_df.shape}")
         except Exception as e:
             logging.error(e, path)
     with open(output_path, 'wb') as f:

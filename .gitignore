@@ -3,3 +3,8 @@ notebooks/*
 results/*
 __pycache__
 Log
+datasets
+train_path.pkl
+test_path.pkl
+test.ipynb
+output

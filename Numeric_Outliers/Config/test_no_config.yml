@@ -1,7 +1,9 @@
 {
   'log_path': Log/test_no.log,
-  'no_dict': ../pkl/no_dict.pkl,
-  'test_pkl_path': ../pkl/test.pkl,
-  'file_type': parquet,
-  'output_path': ../results/no_test.csv
+  'no_dict': output/no_dict.pickle,
+  'test_pkl_path': test_path.pkl,
+  'file_type': csv,
+  'output_path': output,
+  'ground_truth_available': False,
+  'ground_truth_path': ''
 }
