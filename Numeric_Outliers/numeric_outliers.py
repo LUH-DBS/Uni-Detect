@@ -15,7 +15,7 @@ def get_max_mad_score(column: pd.Series) -> tuple:
     :return: tuple with the max MAD score and the index of the row with the max MAD score
     """
     max_mad, max_idx = -np.inf, -1
-    mad = stats.median_abs_deviation(column.to_numpy())
+    mad = stats.median_abs_deviation(column.to_numpy(), nan_policy='omit')
     median = column.median()
     for idx, value in column.items():
         mad_score = -np.inf
