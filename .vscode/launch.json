@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["Spelling/Config/offline_se_config.yml"]
+            "args": ["/home/fatemeh/EDS-BaseLines/Uni-Detect/Numeric_Outliers/Config/test_no_config.yml"]
         }
     ]
 }

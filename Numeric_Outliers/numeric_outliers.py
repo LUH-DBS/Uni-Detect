@@ -52,7 +52,7 @@ def perturbation(column: pd.Series) -> tuple[float, float, int]:
 
     max_mad_d, max_idx = get_max_mad_score(column)
     if max_idx == -1:
-        return
+        return None, None, None
     p_column = column.drop(max_idx)
     p_column = p_column.reset_index(drop=True)
     max_mad_do, temp = get_max_mad_score(p_column)
