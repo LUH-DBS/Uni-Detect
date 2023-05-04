@@ -1,11 +1,10 @@
 import time
-import ud_utils as udt
 import warnings
 import pickle
 import yaml
 import logging
 import sys
-
+from uv_offline_learning import uv_offline_learning
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
@@ -19,6 +18,6 @@ with open(config['train_pkl_path'], 'rb') as f:
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=RuntimeWarning)
     t0 = time.time()
-    udt.uv_offline_learning(train, config['file_type'], config['output_path'])
+    uv_offline_learning(train, config['file_type'], config['output_path'])
     t1 = time.time()
     logging.info("UV Time", t1-t0)

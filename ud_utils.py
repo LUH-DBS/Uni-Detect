@@ -53,39 +53,10 @@ def get_range_avg_pre(avg_tokens):
 
 
 def get_tokens_dict(train_path):
-    tokens_dict = uv.offline_learning_corpus(train_path)
+    tokens_dict = uv.get_tokens_dict(train_path)
     with open('pkl/tokens_dict.pkl', 'wb') as f:
         pickle.dump(tokens_dict, f)
     return tokens_dict
-
-
-
-def uv_offline_learning(train, file_type, output_path):
-    # Number of processed columns
-    count = 0
-    uv_dict = {}
-    tokens_dict = get_tokens_dict(train)
-
-    for path in train:
-        try:
-            if file_type == "parquet":
-                train_df = pd.read_parquet(path + "/clean.parquet")
-            else:
-                train_df = pd.read_csv(path)
-            for col_name in train_df.columns:
-                col = train_df[col_name]
-                if not col.empty:
-                    col_id = path + "_" + col_name
-                    uv_dict[col_id] = uv.get_col_measures(train_df[col_name], list(train_df.columns).index(col_name),
-                                                          tokens_dict)
-            count += 1
-            if count % 100 == 0:
-                logging.info(f"uv_count: {count}")
-            logging.info(f"df shape: {train_df.shape}")
-        except Exception as e:
-            logging.error(e, path)
-    with open(output_path, 'wb') as f:
-        pickle.dump(uv_dict, f)
 
 
 def fd_offline_learning(train, file_type, output_path):
