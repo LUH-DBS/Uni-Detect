@@ -47,6 +47,7 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
     :param tokens_dict: dictionary with the tokens
     :return: dictionary with the uniqueness features
     """
+    logging.info(f"Start df: {path}")
     try:
         if file_type == "parquet":
             train_df = pd.read_parquet(path + "/clean.parquet")

@@ -20,4 +20,4 @@ with warnings.catch_warnings():
     t0 = time.time()
     uv_offline_learning(train, config['file_type'], config['output_path'])
     t1 = time.time()
-    logging.info("UV Time", t1-t0)
+    logging.info(f"UV Time: {t1-t0}")

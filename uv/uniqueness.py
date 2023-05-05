@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+import logging
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join('.')))
@@ -8,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pickle
 
-def get_table_tokens_dict(table_pat: str, file_type: str) -> set:
+def get_table_tokens_dict(table_path: str, file_type: str) -> set:
     """
     This function calculates the tokens dictionary for a single table.
     parameters
@@ -20,11 +21,12 @@ def get_table_tokens_dict(table_pat: str, file_type: str) -> set:
     :return: set
         The tokens dictionary for the table.
     """
+    logging.info(f"Start getting tokens dict for table {table_path}")
     tokens_list = []
     if file_type == "parquet":
-        train_df = pd.read_parquet(table_pat + "/clean.parquet")
+        train_df = pd.read_parquet(table_path + "/clean.parquet")
     else:
-        train_df = pd.read_csv(table_pat)
+        train_df = pd.read_csv(table_path)
     for col_name in train_df.columns:
         train_df[col_name] = train_df[col_name].astype(str)
         for idx, value in train_df[col_name].items():
@@ -49,6 +51,7 @@ def get_tokens_dict(train_path: str, output_path: str, file_type: str, executor:
     :return: dict
         The tokens dictionary.
     """
+    logging.info(f"Start getting tokens dict")
     tokens_dict = {}
     tokens_list = []
     tokens_set = set()
@@ -122,6 +125,7 @@ def get_col_measures(col: pd.Series, left_ness: int, tokens_dict: dict) -> dict:
         The dictionary of the tokens.
     :return: dict   
     """
+    logging.info(f"Start getting measures for column {col.name}")
     col_perturbed = perturbation(col)
     str_col = col.astype(str)
     col_dict = {"d_type": "alnumeric" if str_col.str.isalnum().all() else col.dtype,
