@@ -1,3 +1,5 @@
+import os
+import time
 import numpy as np
 import uniqueness as uv
 import pandas as pd
@@ -13,6 +15,9 @@ with open(sys.argv[1]) as config_file:
 logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+logging.info("UV Test started")
+ground_truth = config['ground_truth_available']
+
 with open(config['uv_pkl_path'], 'rb') as f:
     uv_dict = pickle.load(f)
     logging.info("uv_dict loaded")
@@ -23,15 +28,26 @@ with open(config['tokens_pkl_path'], 'rb') as f:
 
 with open(config['test_pkl_path'], 'rb') as f:
     test = pickle.load(f)
-    test = [path.replace("/home/fatemeh/GitTables/Sandbox/", "/Users/fatemehahmadi/Documents/Sandbox/") for path in test]
     logging.info("test_dict loaded")
 
-uniqueness_results = pd.DataFrame(
-    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
+file_type = config['file_type']
+output_path = config['output_path']
+tables_output_path = os.path.join(output_path, "uv_tables_test_results")
+if not os.path.exists(tables_output_path):
+    os.makedirs(tables_output_path)
 
+uniqueness_results = pd.DataFrame(
+    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error', 'time'])
+
+t_init = time.time()
 for path in test:
     try:
-        test_df = pd.read_csv(path + "/dirty.csv")
+        t0 = time.time()
+        if file_type == "parquet":
+            test_df = pd.read_parquet(path)
+        else:
+            test_df = pd.read_csv(path)
+
         for test_column_name in test_df.columns:
             test_column = test_df[test_column_name]
             left_ness = list(test_df.columns).index(test_column_name)
@@ -60,13 +76,35 @@ for path in test:
                         p_dot = p_dot + 1
 
                 lr = p_dot / p_dt if p_dt else -np.inf
-                clean_df = pd.read_parquet(path + "/clean.parquet")
-                correct_value = clean_df[test_column_name].loc[duplicate_idx]
-                row = ["uniqueness", path, test_column_name, duplicate_idx,
-                       list(test_df.columns).index(test_column_name), lr,
-                       test_column.loc[duplicate_idx], correct_value, correct_value != test_column.loc[duplicate_idx]]
-                uniqueness_results.loc[len(uniqueness_results)] = row
-    except Exception as e:
-        logging.info(e)
+                t1 = time.time()
+                if ground_truth:
+                    ground_truth_path = config['ground_truth_path']
+                    clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
+                    correct_value = clean_df[test_column_name].loc[duplicate_idx]
+                else:
+                    correct_value = "----Ground Truth is Not Available----"
+                if duplicate_idx and lr != -np.inf:
+                    row = ["uniqueness", path, test_column_name, duplicate_idx,
+                        list(test_df.columns).index(test_column_name), lr,
+                        test_column.loc[duplicate_idx], correct_value, correct_value != test_column.loc[duplicate_idx],
+                        t1 - t0]
+                else: 
+                    row = ["uniqueness", path, test_column_name, np.nan,
+                        list(test_df.columns).index(test_column_name), np.nan,
+                        np.nan, correct_value, np.nan, t1 - t0]
 
-uniqueness_results.to_csv(config['output_path'])
+            else:
+                t1 = time.time()
+                row = ["uniqueness", path, test_column_name, np.nan,
+                    list(test_df.columns).index(test_column_name), np.nan,
+                    np.nan, correct_value, np.nan, t1 - t0]
+
+            uniqueness_results.loc[len(uniqueness_results)] = row
+        with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
+            pickle.dump(uniqueness_results, f)
+    except Exception as e:
+        logging.info(f"Error in {path}: {e}")
+
+uniqueness_results.to_csv(os.path.join(config['output_path'], "uv_test_results.csv"))
+t_f = time.time() - t_init
+logging.info(f"UV Test finished in {t_f} seconds")
