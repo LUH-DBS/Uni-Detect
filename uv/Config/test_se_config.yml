@@ -1,7 +1,0 @@
-{
-  'log_path': Log/test_se.log,
-  'se_pkl_path': pkl/se_dict.pkl,
-  'test_pkl_path': pkl/test.pkl,
-  'file_type': parquet,
-  'output_path': results/se_test.csv
-}

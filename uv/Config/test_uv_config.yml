@@ -1,8 +1,10 @@
 {
-  'log_path': Log/test_se.log,
-  'uv_pkl_path': ../pkl/se_dict.pkl,
-  'test_pkl_path': ../pkl/test.pkl,
-  'file_type': parquet,
-  'output_path': ../results/se_test.csv,
-  'tokens_pkl_path': ../pkl/tokens_dict.pkl
+  'log_path': Log/test_uv.log,
+  'uv_pkl_path': output/uv_dict.pickle,
+  'tokens_pkl_path': output/tokens_dict.pkl,
+  'test_pkl_path': datasets/aggregated_kaggle_lake/test_path.pkl,
+  'file_type': csv,
+  'output_path': output,
+  'ground_truth_available': False,
+  'ground_truth_path': ''
 }

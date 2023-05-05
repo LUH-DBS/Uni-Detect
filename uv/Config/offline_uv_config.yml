@@ -1,6 +1,6 @@
 {
   'log_path': Log/offline_uv.log,
-  'train_pkl_path': pkl/train.pkl,
-  'file_type': parquet,
-  'output_path': pkl/uv_dict.pkl
+  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake/train_path.pkl,
+  'file_type': csv,
+  'output_path': output
 }

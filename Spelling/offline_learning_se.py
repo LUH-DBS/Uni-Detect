@@ -57,8 +57,7 @@ def se_process_table(path: str, output_path: str, file_type: str, executor: Thre
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_se_dict
     except Exception as e:
-        logging.error(e)
-        logging.info(f"Error processing path {path}")
+        logging.info(f"Error {e} processing path {path}")
         return {}
 
 def se_offline_learning(train_path_list: list, file_type: str, output_path:str) -> dict:
