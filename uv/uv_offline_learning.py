@@ -67,8 +67,8 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
             pickle.dump(path_uv_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_uv_dict
-    except Exception as e:
-        logging.error(f"Error: {e}")
+    except Exception as exception :
+        logging.error(f"Error: {exception }")
         logging.info(f"Error processing df: {path}, df shape: {train_df.shape}")
     return  {}
 

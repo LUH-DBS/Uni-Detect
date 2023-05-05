@@ -1,6 +1,6 @@
 {
-  'log_path': Log/offline_fd,
-  'train_pkl_path': /Users/fatemehahmadi/Documents/Github-Private/Fatemeh/Uni-Detect/pkl/train.pkl,
-  'file_type': parquet,
-  'output_path': /Users/fatemehahmadi/Documents/Github-Private/Fatemeh/Uni-Detect/pkl/no_dict.pkl
+  'log_path': Log/offline_fd.log,
+  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake/train_path.pkl,
+  'file_type': csv,
+  'output_path': output
 }
