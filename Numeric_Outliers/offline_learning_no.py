@@ -42,7 +42,7 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
     try:
         logging.info(f"Processing path {path}")
         if file_type == "parquet":
-            train_df = pd.read_parquet(path + "/clean.parquet")
+            train_df = pd.read_parquet(path)
         else:
             train_df = pd.read_csv(path)
         
@@ -60,7 +60,7 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
         logging.info(f"Processed path {path}, df shape: {train_df.shape}, df_no shape: {train_df_no.shape}")
 
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + path.split("/")[-1] + ".pickle", 'wb') as f:
+        with open(output_path + "/" + os.path.basename(path).removesuffix('.csv') + ".pickle", 'wb') as f:
             pickle.dump(path_no_dict, f)
         return path_no_dict
     
@@ -71,7 +71,7 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
 def no_offline_learning(train_path_list: list, file_type: str, output_path:str) -> dict:
     """
     Run numeric outliers offline learning
-    :param train: list of paths to train tables
+    :param train_path_list: list of paths to train tables
     :param file_type: file type of the train tables
     :param output_path: path to save the dictionary
     :return: dictionary with the numeric outliers features
