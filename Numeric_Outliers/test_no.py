@@ -10,16 +10,18 @@ import logging
 import sys
 import yaml
 
-# Config file
+# Reading config file
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
+# Creating log file
 logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 t0 = time.time()
 logging.info("Start test_no.py")
 ground_truth = config['ground_truth_available']
+
 with open(config['test_pkl_path'], 'rb') as f:
     test = pickle.load(f)
     logging.info("test_dict loaded")
@@ -29,6 +31,7 @@ with open(config['no_dict'], 'rb') as f:
 
 no_results = pd.DataFrame(
     columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
+
 file_type = config['file_type']
 output_path = config['output_path']
 tables_output_path = os.path.join(output_path, "no_tables_test_results")
@@ -36,6 +39,8 @@ if not os.path.exists(tables_output_path):
     os.makedirs(tables_output_path)
 
 for path in test:
+    no_results_table = pd.DataFrame(
+    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
     try:
         # Load test table and get numeric columns
         test_df = pd.read_csv(path).select_dtypes(include=[np.number])
@@ -44,10 +49,9 @@ for path in test:
             try:
                 test_column = test_df[test_column_name]
                 max_mad_test_d, max_mad_test_do, max_idx = no.perturbation(test_column)
-                max_idx_t = -1
                 number_of_rows_range = udt.get_range_count(test_column.count())
             except Exception as e:
-                logging.info(f"Error in {path} {test_column_name}")
+                logging.info(f"Error in table {path} column {test_column_name} - Error: {e}")
                 continue
 
             # Compare the test column with the train columns
@@ -89,31 +93,26 @@ for path in test:
 
                 if lr < lr_t:
                     lr = lr_t
-                    max_idx = max_idx_t
-            if ground_truth:
-                ground_truth_path = config['ground_truth_path']
-                clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
-                correct_value = clean_df[test_column_name].loc[max_idx]
-            else:
-                correct_value = "----Ground Truth is Not Available----"
 
-            if max_idx != -1:
-                row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
-                        lr,
-                        test_column.loc[max_idx], correct_value, correct_value != test_column.loc[max_idx]]
-            else:
-                row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
-                       None, None, None, None]
-        else:
-            row = ["no", path, test_column_name, None, list(test_df.columns).index(test_column_name),
-                       None, None, None, None]
-                       
-            no_results.loc[len(no_results)] = row
+                if ground_truth:
+                    ground_truth_path = config['ground_truth_path']
+                    clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
+                    correct_value = clean_df[test_column_name].loc[max_idx]
+                else:
+                    correct_value = "----Ground Truth is Not Available----"
 
+                if max_idx != -1:
+                    row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
+                            lr,
+                            test_column.loc[max_idx], correct_value, correct_value != test_column.loc[max_idx]]                       
+                    no_results.loc[len(no_results)] = row
+                    no_results_table.loc[len(no_results_table)] = row
+        logging.info(f"no test for {path} is done")
+        logging.info("Saving no test results for the table")
         with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
-            pickle.dump(no_results, f)
+            pickle.dump(no_results_table, f)
     except Exception as e:
-        logging.info(f"Error in {path}: {e}")
+        logging.info(f"Error in table {path}: Error {e}")
 no_results.to_csv(os.path.join(config['output_path'], "no_test_results.csv"))
 t1 = time.time()
 logging.info(f"no test time: {t1-t0}") 

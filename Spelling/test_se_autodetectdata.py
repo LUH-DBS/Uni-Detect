@@ -25,6 +25,9 @@ with open(config['test_pkl_path'], 'rb') as f:
 spelling_results = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
                                          'Label', 'error',  'time'])
 for path in test:
+    spelling_results_table = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
+                                         'Label', 'error',  'time'])
+
     t0 = time.time()
     df = pd.read_csv(path)
     to_be_dropped = df.select_dtypes([np.number])

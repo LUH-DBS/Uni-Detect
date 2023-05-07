@@ -37,12 +37,14 @@ if not os.path.exists(tables_output_path):
     os.makedirs(tables_output_path)
 
 uniqueness_results = pd.DataFrame(
-    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error', 'time'])
+    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
 
 t_init = time.time()
 for path in test:
+    uniqueness_results_table = pd.DataFrame(
+    columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value', 'correct_value', 'error'])
+
     try:
-        t0 = time.time()
         if file_type == "parquet":
             test_df = pd.read_parquet(path)
         else:
@@ -53,7 +55,7 @@ for path in test:
             left_ness = list(test_df.columns).index(test_column_name)
             uniqueness_d, uniqueness_do, duplicate_idx = uv.perturbation(test_column)
             number_of_rows_range = udt.get_range_count(test_column.count())
-            avg_col_pre = uv.get_prev_range(tokens_dict, test_column)
+            avg_col_pre = udt.get_prev_range(tokens_dict, test_column)
 
             p_dt, p_dot = 0, 0
             if duplicate_idx != -1 and uniqueness_d != uniqueness_do:
@@ -76,7 +78,6 @@ for path in test:
                         p_dot = p_dot + 1
 
                 lr = p_dot / p_dt if p_dt else -np.inf
-                t1 = time.time()
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']
                     clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
@@ -86,22 +87,12 @@ for path in test:
                 if duplicate_idx and lr != -np.inf:
                     row = ["uniqueness", path, test_column_name, duplicate_idx,
                         list(test_df.columns).index(test_column_name), lr,
-                        test_column.loc[duplicate_idx], correct_value, correct_value != test_column.loc[duplicate_idx],
-                        t1 - t0]
-                else: 
-                    row = ["uniqueness", path, test_column_name, np.nan,
-                        list(test_df.columns).index(test_column_name), np.nan,
-                        np.nan, correct_value, np.nan, t1 - t0]
+                        test_column.loc[duplicate_idx], correct_value, correct_value != test_column.loc[duplicate_idx]]
 
-            else:
-                t1 = time.time()
-                row = ["uniqueness", path, test_column_name, np.nan,
-                    list(test_df.columns).index(test_column_name), np.nan,
-                    np.nan, correct_value, np.nan, t1 - t0]
-
-            uniqueness_results.loc[len(uniqueness_results)] = row
+                    uniqueness_results.loc[len(uniqueness_results)] = row
+                    uniqueness_results_table.loc[len(uniqueness_results_table)] = row
         with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
-            pickle.dump(uniqueness_results, f)
+            pickle.dump(uniqueness_results_table, f)
     except Exception as e:
         logging.info(f"Error in {path}: {e}")
 

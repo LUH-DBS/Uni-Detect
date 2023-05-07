@@ -1,6 +1,6 @@
 {
   'log_path': Log/offline_se,
-  'train_pkl_path': train_path.pkl,
+  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train_path.pkl,
   'file_type': csv,
   'output_path': output
 }

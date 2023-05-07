@@ -6,9 +6,11 @@ import sys
 import yaml
 import fd_offline_learning as fd
 
+# Load config file
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
+# Set up logging
 logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 

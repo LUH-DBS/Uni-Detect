@@ -50,7 +50,7 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
     logging.info(f"Start df: {path}")
     try:
         if file_type == "parquet":
-            train_df = pd.read_parquet(path + "/clean.parquet")
+            train_df = pd.read_parquet(path)
         else:
             train_df = pd.read_csv(path)
 
@@ -63,7 +63,7 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
             if col_measures is not None:
                 path_uv_dict[col_id] = col_measures
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + path.split("/")[-1] + ".pickle", 'wb') as f:
+        with open(output_path + "/" + os.path.basename(path).removesuffix("." + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_uv_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_uv_dict
@@ -88,7 +88,7 @@ def uv_offline_learning(train_path_list: list, file_type: str, output_path: str)
     if not os.path.exists(tables_output_path):
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        tokens_dict = uv.get_tokens_dict(train_path_list, output_path, file_type, executor)
+        tokens_dict = udt.get_tokens_dict(train_path_list, output_path, file_type, executor)
         executor_features = []
         for path in train_path_list:
             executor_features.append(executor.submit(uv_process_table, path, tables_output_path, file_type, tokens_dict, executor))
