@@ -33,14 +33,17 @@ if not os.path.exists(tables_output_path):
     os.makedirs(tables_output_path)
 
 spelling_results = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
-                                         'ground_truth', 'error',  'time'])
+                                         'ground_truth', 'error'])
 t_init = time.time()
 for path in test:
+    spelling_results_table = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
+                                         'ground_truth', 'error'])
     try:
-        t0 = time.time()
-        df = pd.read_csv(path)
-        to_be_dropped = df.select_dtypes([np.number])
-        test_df = df.drop(to_be_dropped, axis=1)
+        if file_type == "parquet":
+            test_df = pd.read_parquet(path)
+        else:
+            test_df = pd.read_csv(path)
+        
         for test_column_name in test_df.columns:
             test_column = test_df[test_column_name]
             mpd_d, mpd_do, avg_len_diff_tokens, idx_p = se.perturbation(test_column)
@@ -50,7 +53,9 @@ for path in test:
 
             if mpd_do != mpd_d:
                 for col_id in se_dict.keys():
-                    if se_dict[col_id]["d_type"] != test_column.dtype:
+                    str_col = test_column.astype(str)
+                    test_col_dtype = "alnumeric" if str_col.str.isalnum().all() else test_column.dtype,
+                    if se_dict[col_id]["d_type"] != test_col_dtype:
                         continue
                     if se_dict[col_id]["number_of_rows_range"] != number_of_rows_range:
                         continue
@@ -63,7 +68,6 @@ for path in test:
                     if train_mpd_d <= mpd_d and train_mpd_do >= mpd_do:
                         p_dot = p_dot + 1
                 lr = p_dot / p_dt if p_dt else -np.inf
-                t1 = time.time()
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']
                     clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
@@ -73,19 +77,13 @@ for path in test:
                 if idx_p and lr != -np.inf:
                     error = test_column.loc[idx_p] != ground_truth
                     row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
-                           test_column.loc[idx_p], correct_value, error, t1-t0]
-                    
-                else: 
-                    row = ["spelling", path, test_column_name, np.nan, list(test_df.columns).index(test_column_name), lr,
-                           np.nan, np.nan, np.nan, t1-t0]
-            else: 
-                t1 = time.time()
-                row = ["spelling", path, test_column_name, np.nan, list(test_df.columns).index(test_column_name), np.nan,
-                        np.nan, np.nan, np.nan, t1-t0]
-            spelling_results.loc[len(spelling_results)] = row
+                           test_column.loc[idx_p], correct_value, error]
+                                
+                spelling_results.loc[len(spelling_results)] = row
+                spelling_results_table.loc[len(spelling_results_table)] = row
     
         with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
-            pickle.dump(spelling_results, f)
+            pickle.dump(spelling_results_table, f)
     except Exception as e:
         logging.info(f"Error in {path}: {e}")
         continue

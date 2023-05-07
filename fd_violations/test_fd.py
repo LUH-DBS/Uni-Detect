@@ -40,12 +40,14 @@ if not os.path.exists(tables_output_path):
 
 fd_results = pd.DataFrame(
     columns=['error_type', 'path', 'col_1_name', 'col_2_name', 'row_idx', 'col_1_idx', 'col_2_idx', 'LR',
-             'value_1', 'value_2', 'correct_value_1', 'correct_value_2', 'error', 'time'])
+             'value_1', 'value_2', 'correct_value_1', 'correct_value_2', 'error'])
 test_column_1, test_column_2, left_ness_1, left_ness_2, fd_d, fd_do, idx_d = np.nan, np.nan, np.nan, np.nan,\
                                                                              np.nan, np.nan, np.nan
 t_init = time.time()
 for path in test:
-    t0 = time.time()
+    fd_results_table = pd.DataFrame(
+    columns=['error_type', 'path', 'col_1_name', 'col_2_name', 'row_idx', 'col_1_idx', 'col_2_idx', 'LR',
+             'value_1', 'value_2', 'correct_value_1', 'correct_value_2', 'error'])
     try:
         if file_type == "parquet":
             test_df = pd.read_parquet(path)
@@ -83,7 +85,6 @@ for path in test:
                             p_dot = p_dot + 1
 
                 lr = p_dot / p_dt if p_dt and p_dot else -np.inf
-                t1 = time.time()
 
                 if lr != -np.inf:
                     if idx_d != -1:
@@ -100,23 +101,13 @@ for path in test:
                             list(test_df.columns).index(pair[1]),
                             lr, test_column_1.loc[idx_d], test_column_2.loc[idx_d],
                             correct_value_1, correct_value_2,
-                            correct_value_1 != test_column_1.loc[idx_d] or correct_value_2 != test_column_2.loc[idx_d], t1 - t0]
-                    else:
-                        row = ["fd", path, pair[0], pair[1], idx_d, list(test_df.columns).index(pair[0]),
-                            list(test_df.columns).index(pair[1]),
-                            lr, None, None, None, None, None, t1 - t0]
-                else:
-                    row = ["fd", path, pair[0], pair[1], idx_d, list(test_df.columns).index(pair[0]),
-                            list(test_df.columns).index(pair[1]),
-                            lr, None, None, None, None, None, t1 - t0]
-            else:
-                t1 = time.time()
-                row = ["fd", path, pair[0], pair[1], idx_d, list(test_df.columns).index(pair[0]),
-                            list(test_df.columns).index(pair[1]),
-                            None, None, None, None, None, None, t1 - t0]
-            fd_results.loc[len(fd_results)] = row
+                            correct_value_1 != test_column_1.loc[idx_d] or correct_value_2 != test_column_2.loc[idx_d]]
+                        fd_results.loc[len(fd_results)] = row
+                        fd_results_table.loc[len(fd_results_table)] = row
+
             with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
-                pickle.dump(fd_results, f)
+                pickle.dump(fd_results_table, f)
+            logging.info(f"fd_test_results_table saved in {tables_output_path}")
 
     except Exception as e:
         logging.info(f"Error in {path}: {e}")

@@ -5,9 +5,12 @@ import yaml
 import logging
 import sys
 from uv_offline_learning import uv_offline_learning
+
+# Load config file
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
+# Set up logging
 logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 

@@ -1,9 +1,9 @@
 {
   'log_path': Log/test_no.log,
   'no_dict': output/no_dict.pickle,
-  'test_pkl_path': test_path.pkl,
+  'test_pkl_path': datasets/data-gov/test_path.pkl,
   'file_type': csv,
   'output_path': output,
-  'ground_truth_available': False,
-  'ground_truth_path': ''
+  'ground_truth_available': True,
+  'ground_truth_path': '/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/test/clean'
 }

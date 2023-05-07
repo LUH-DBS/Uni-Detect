@@ -55,7 +55,7 @@ def fd_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
             if col_measures is not None:
                 path_fd_dict[col_id] = col_measures
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + path.split("/")[-1] + ".pickle", 'wb') as f:
+        with open(output_path + "/" + os.path.basename(path).removesuffix("." + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_fd_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
     except Exception as e:

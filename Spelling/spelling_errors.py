@@ -42,7 +42,7 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
         distance_matrix = pdist(transformed_col, lambda x, y: distance(x[0], y[0]))
     except Exception as e:
         logging.error(f"Error calculating distance matrix: {e}")
-        return
+        return None, None, None, None
     sdm = squareform(distance_matrix)
     np.nan_to_num(sdm, np.inf)
     sdm[sdm == 0] = np.inf
@@ -76,7 +76,7 @@ def perturbation(column: pd.Series) -> tuple[float, float, float, int]:
     column = column.astype(str)
     mpd_d, i_p, j_p, avg_len_diff_tokens = get_mpd(column)
     if i_p == -1 or j_p == -1 or avg_len_diff_tokens == -1 or mpd_d == np.inf:
-        return
+        return None, None, None, None
     p_column_test_1 = column.drop(i_p)
     p_column_test_1 = p_column_test_1.reset_index(drop=True)
     mpd_do_test_1, i_p_test_1, j_p_test_1, tmp_test_1 = get_mpd(p_column_test_1)

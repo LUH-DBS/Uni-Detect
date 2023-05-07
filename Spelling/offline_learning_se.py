@@ -38,7 +38,7 @@ def se_process_table(path: str, output_path: str, file_type: str, executor: Thre
     """
     try:
         if file_type == "parquet":
-            train_df = pd.read_parquet(path + "/clean.parquet")
+            train_df = pd.read_parquet(path)
         else:
             train_df = pd.read_csv(path)
         
@@ -52,7 +52,7 @@ def se_process_table(path: str, output_path: str, file_type: str, executor: Thre
             if col_measures is not None:
                 path_se_dict[col_id] = col_measures
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + path.split("/")[-1] + ".pickle", 'wb') as f:
+        with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_se_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_se_dict

@@ -28,12 +28,12 @@ def get_range_count(num_rows: int) -> int:
 
 def get_range_mpd(mpd_diff: float) -> int:
     """
-    Get the range of the maximum pairwise distance
+    Get the range of the average length of the tokens that difer between the MPD pair
     
     parametrers:
     ------------
-    :param mpd_diff: maximum pairwise distance
-    :return: range of the maximum pairwise distance
+    :param mpd_diff: minimum pairwise distance
+    :return: range of the average length of the tokens that difer between the MPD pair
     """
     if mpd_diff <= 5:
         return 0
@@ -115,7 +115,7 @@ def get_table_tokens_dict(table_path: str, file_type: str) -> set:
     logging.info(f"Start getting tokens dict for table {table_path}")
     tokens_list = []
     if file_type == "parquet":
-        train_df = pd.read_parquet(table_path + "/clean.parquet")
+        train_df = pd.read_parquet(table_path)
     else:
         train_df = pd.read_csv(table_path)
     for col_name in train_df.columns:
@@ -144,7 +144,7 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
 
     tokens_list_col = [token for idx, value in col.items() for token in word_tokenize(value)]
     tokens_set_col = set(tokens_list_col)
-    prev_sum = sum(tokens_dict.get(token, 1) - tokens_list_col.count(token) for token in tokens_set_col)
+    prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_col)
     prev_avg = prev_sum / len(tokens_set_col)
     prev_avg_range = get_range_avg_pre(prev_avg)
     return prev_avg_range

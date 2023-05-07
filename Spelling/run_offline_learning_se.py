@@ -8,10 +8,11 @@ import pickle
 import logging
 import yaml
 
-# Config file 
+# Create the config file 
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
+# Create the log file
 logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 

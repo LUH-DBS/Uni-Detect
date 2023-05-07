@@ -60,7 +60,7 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
         logging.info(f"Processed path {path}, df shape: {train_df.shape}, df_no shape: {train_df_no.shape}")
 
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + os.path.basename(path).removesuffix('.csv') + ".pickle", 'wb') as f:
+        with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_no_dict, f)
         return path_no_dict
     
