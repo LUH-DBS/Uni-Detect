@@ -1,0 +1,6 @@
+{
+  'log_path': Log/tokenizer,
+  'train_path_list': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train_path.pkl,
+  'output_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/output,
+  'file_type': csv
+}
