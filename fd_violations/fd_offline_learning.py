@@ -61,7 +61,7 @@ def fd_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
     except Exception as e:
         logging.info(f"Error {e} processing path {path}")
 
-def fd_offline_learning(train: list, file_type: str, output_path: str) -> dict:
+def fd_offline_learning(train: list, file_type: str, output_path: str, tokens_dict: dict) -> dict:
     """
     This function computes the functional dependencies for each table in the training set in parallel.
     parameters:
@@ -69,6 +69,7 @@ def fd_offline_learning(train: list, file_type: str, output_path: str) -> dict:
     :param train: list of paths to the training data
     :param file_type: parquet or csv
     :param output_path: path to save the results
+    :param tokens_dict: tokens dictionary
     :return: dictionary of functional dependencies
     """
 
@@ -77,7 +78,6 @@ def fd_offline_learning(train: list, file_type: str, output_path: str) -> dict:
     if not os.path.exists(tables_output_path):
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        tokens_dict = udt.get_tokens_dict(train, output_path, file_type, executor)
         executor_features = []
         for path in train:
             executor_features.append(executor.submit(fd_process_table, path, tables_output_path, file_type, tokens_dict, executor))

@@ -1,6 +1,7 @@
 {
   'log_path': Log/offline_fd.log,
-  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake/train_path.pkl,
+  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train_path.pkl,
+  'tokens_dict_path': output/tokens_dict.pkl,
   'file_type': csv,
   'output_path': output
 }
