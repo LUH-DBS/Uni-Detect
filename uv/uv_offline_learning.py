@@ -72,7 +72,7 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
         logging.info(f"Error processing df: {path}, df shape: {train_df.shape}")
     return  {}
 
-def uv_offline_learning(train_path_list: list, file_type: str, output_path: str):
+def uv_offline_learning(train_path_list: list, file_type: str, output_path: str, tokens_dict: dict) -> None:
     """
     Run uniqueness offline learning for a list of tables
 
@@ -81,6 +81,7 @@ def uv_offline_learning(train_path_list: list, file_type: str, output_path: str)
     :param train_path_list: list of paths to the train tables
     :param file_type: file type of the train tables
     :param output_path: path to save the dictionary
+    :param tokens_dict: dictionary with the tokens
     :return: dictionary with the uniqueness features
     """
     uv_dict = {}
@@ -88,7 +89,6 @@ def uv_offline_learning(train_path_list: list, file_type: str, output_path: str)
     if not os.path.exists(tables_output_path):
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        tokens_dict = udt.get_tokens_dict(train_path_list, output_path, file_type, executor)
         executor_features = []
         for path in train_path_list:
             executor_features.append(executor.submit(uv_process_table, path, tables_output_path, file_type, tokens_dict, executor))

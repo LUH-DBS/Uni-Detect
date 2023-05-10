@@ -1,7 +1,7 @@
 {
   'log_path': Log/test_se.log,
   'se_pkl_path': output/se_dict.pickle,
-  'test_pkl_path': test_path.pkl,
+  'test_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake/test_path.pkl, 
   'file_type': csv,
   'output_path': output,
   'ground_truth_available': False,

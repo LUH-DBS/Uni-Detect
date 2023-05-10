@@ -6,6 +6,7 @@ import logging
 import os
 import pickle
 import sys
+import time
 from joblib import cpu_count
 import pandas as pd
 import yaml
@@ -36,6 +37,7 @@ def get_tokens_dict(train_path: str, output_path: str, file_type: str, executor:
     td = [feature.result() for feature in executor_features]
     aggregated_tokens_counter = sum((Counter(token_dict) for token_dict in td), Counter())
     tokens_dict = {k: v / n_tables for k, v in aggregated_tokens_counter.items()}
+    logging.info(f"Finish getting tokens dict")
     with open(os.path.join(output_path, 'tokens_dict.pkl'), 'wb') as f:
         pickle.dump(tokens_dict, f)
     return tokens_dict
@@ -71,6 +73,7 @@ def get_table_tokens_dict(table_path: str, file_type: str) -> set:
     return tokens_dict
 
 if __name__ == "__main__":
+    t0 = time.time()
     # Load config file
     with open(sys.argv[1]) as config_file:
         config = yaml.load(config_file, Loader=yaml.SafeLoader)
@@ -87,4 +90,6 @@ if __name__ == "__main__":
         train_path_list = pickle.load(f)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
         tokens_dict = get_tokens_dict(train_path_list, output_path, file_type, executor)
+    logging.info(f"Total time: {time.time() - t0}")
+    
             

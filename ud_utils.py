@@ -66,66 +66,6 @@ def get_range_avg_pre(avg_tokens: float) -> int:
         return 4
     return 5
 
-def get_tokens_dict(train_path: str, output_path: str, file_type: str, executor: ThreadPoolExecutor):
-    """
-    This function calculates the tokens dictionary. Tokens_dict is a dictionary that maps each token to its frequency / number of tables.
-    parameters
-    ----------
-    :param train_path: str
-        The path to the train data.
-    :param output_path: str
-        The path to save the tokens dictionary.
-    :param file_type: str
-        The file type of the train data.
-    :param executor: ThreadPoolExecutor
-        The executor to use for parallelization.
-    :return: dict
-        The tokens dictionary.
-    """
-    logging.info(f"Start getting tokens dict")
-    tokens_dict = {}
-    tokens_list = []
-    tokens_set = set()
-    n_tables = len(train_path)
-    executor_features = []
-
-    for path in train_path:
-        executor_features.append(executor.submit(get_table_tokens_dict, path, file_type))
-    for feature in executor_features:
-        tokens_list.extend(feature.result())
-    tokens_set = set(tokens_list)
-    token_counts = {token: tokens_list.count(token) for token in tokens_set}
-    tokens_dict = {token: token_counts[token] / n_tables for token in token_counts}
-    with open(os.path.join(output_path, 'tokens_dict.pkl'), 'wb') as f:
-        pickle.dump(tokens_dict, f)
-    return tokens_dict
-
-def get_table_tokens_dict(table_path: str, file_type: str) -> set:
-    """
-    This function calculates the tokens dictionary for a single table.
-    parameters
-    ----------
-    :param table_pat: str
-        The path to the table.
-    :param file_type: str
-        The file type of the table.
-    :return: set
-        The tokens dictionary for the table.
-    """
-    logging.info(f"Start getting tokens dict for table {table_path}")
-    tokens_list = []
-    if file_type == "parquet":
-        train_df = pd.read_parquet(table_path)
-    else:
-        train_df = pd.read_csv(table_path)
-    for col_name in train_df.columns:
-        train_df[col_name] = train_df[col_name].astype(str)
-        for idx, value in train_df[col_name].items():
-            tokens = word_tokenize(value)
-            for token in tokens:
-                tokens_list.append(token)
-    return tokens_list
-
 def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
     """
     This function calculates average prevalenve of the column.
