@@ -2,7 +2,6 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 import pickle
-from nltk import word_tokenize
 import pandas as pd
 
 def get_range_count(num_rows: int) -> int:

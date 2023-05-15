@@ -93,6 +93,7 @@ for path in test:
                     uniqueness_results_table.loc[len(uniqueness_results_table)] = row
         with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
             pickle.dump(uniqueness_results_table, f)
+        logging.info(f"UV Test finished for {path}")
     except Exception as e:
         logging.info(f"Error in {path}: {e}")
 

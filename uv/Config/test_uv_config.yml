@@ -2,9 +2,9 @@
   'log_path': Log/test_uv.log,
   'uv_pkl_path': output/uv_dict.pickle,
   'tokens_pkl_path': output/tokens_dict.pkl,
-  'test_pkl_path': datasets/aggregated_kaggle_lake/test_path.pkl,
+  'test_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/test_path.pkl,
   'file_type': csv,
   'output_path': output,
-  'ground_truth_available': False,
-  'ground_truth_path': ''
+  'ground_truth_available': True,
+  'ground_truth_path': '/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/test/clean'
 }
