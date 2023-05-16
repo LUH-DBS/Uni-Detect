@@ -2,7 +2,6 @@ from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 import pickle
-from nltk import word_tokenize
 import pandas as pd
 
 def get_range_count(num_rows: int) -> int:
@@ -82,7 +81,7 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
     prev_sum = -1
     col = col.astype(str)
 
-    tokens_list_col = [token for idx, value in col.items() for token in word_tokenize(value)]
+    tokens_list_col = [token for idx, value in col.items() for token in value.split()]
     tokens_set_col = set(tokens_list_col)
     prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_col)
     prev_avg = prev_sum / len(tokens_set_col)
