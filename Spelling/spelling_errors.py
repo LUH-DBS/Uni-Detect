@@ -1,10 +1,10 @@
 import logging
 import pandas as pd
-from nltk import word_tokenize
 import numpy as np
 from Levenshtein import distance
 from scipy.spatial.distance import pdist, squareform
 import sys
+import time 
 import os
 sys.path.append(os.path.abspath(os.path.join('.')))
 import ud_utils as udt
@@ -17,8 +17,8 @@ def get_avg_diff_tokens(value_1: str, value_2: str) -> float:
     :param value_2: second string
     :return: average difference in tokens between the two strings
     """
-    tokenized_value_1 = word_tokenize(value_1)
-    tokenized_value_2 = word_tokenize(value_2)
+    tokenized_value_1 = value_1.split()
+    tokenized_value_2 = value_2.split()
     uniq_1 = list(set(tokenized_value_1) - set(tokenized_value_2))
     uniq_2 = list(set(tokenized_value_2) - set(tokenized_value_1))
     uniq = uniq_1 + uniq_2
@@ -37,6 +37,7 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
     :param column: pandas series
     :return: tuple with the minimum pairwise distance, the index of the first value and the index of the second value and the average difference in tokens
     """
+    t0 = time.time()
     transformed_col = column.to_numpy().reshape(-1, 1)
     try:
         distance_matrix = pdist(transformed_col, lambda x, y: distance(x[0], y[0]))
@@ -54,6 +55,7 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
         i_p, j_p = -1, -1
     avg_diff_tokens = get_avg_diff_tokens(column.loc[i_p], column.loc[j_p])
     avg_len_diff_tokens = udt.get_range_mpd(avg_diff_tokens) if avg_diff_tokens else -1
+    logging.info(f"Time to calculate mpd for a column with size {column.shape}: {time.time() - t0}")
     return mpd, i_p, j_p, avg_len_diff_tokens
 
 def get_col_measures(col):

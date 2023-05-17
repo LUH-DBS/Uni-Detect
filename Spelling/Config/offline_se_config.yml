@@ -2,5 +2,6 @@
   'log_path': Log/offline_se,
   'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train_path.pkl,
   'file_type': csv,
+  'n_cells_limit': 100000,
   'output_path': output
 }

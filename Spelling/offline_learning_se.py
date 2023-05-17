@@ -28,12 +28,13 @@ def se_process_col(path: str, col_name: str, train_df: pd.DataFrame) -> tuple[st
     return col_id, col_measures
 
 
-def se_process_table(path: str, output_path: str, file_type: str, executor: ThreadPoolExecutor) -> dict:
+def se_process_table(path: str, output_path: str, file_type: str, n_cells_limit: int, executor: ThreadPoolExecutor) -> dict:
     """
     Run spelling errors offline learning for a single table
     :param path: path to the train table
     :param file_type: file type of the train table
     :param executor: executor to run the offline learning in parallel
+    :param n_cells_limit: limit for the number of cells in the table
     :return: dictionary with the spelling errors features
     """
     try:
@@ -42,29 +43,34 @@ def se_process_table(path: str, output_path: str, file_type: str, executor: Thre
         else:
             train_df = pd.read_csv(path)
         
-        executor_features = []
-        for col_name in train_df.columns:
-            executor_features.append(executor.submit(se_process_col, path, col_name, train_df))
+        if train_df.shape[0] * train_df.shape[1] < n_cells_limit:
+            executor_features = []
+            for col_name in train_df.columns:
+                executor_features.append(executor.submit(se_process_col, path, col_name, train_df))
 
-        path_se_dict = {}
-        for feature in executor_features:
-            col_id, col_measures = feature.result()
-            if col_measures is not None:
-                path_se_dict[col_id] = col_measures
-        # Save the dictionary for the table to disk
-        with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
-            pickle.dump(path_se_dict, f)
-        logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
-        return path_se_dict
+            path_se_dict = {}
+            for feature in executor_features:
+                col_id, col_measures = feature.result()
+                if col_measures is not None:
+                    path_se_dict[col_id] = col_measures
+            # Save the dictionary for the table to disk
+            with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
+                pickle.dump(path_se_dict, f)
+            logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
+            return path_se_dict
+        else:
+            logging.info(f"Skipping df: {path}, df shape: {train_df.shape}")
+            return {}
     except Exception as e:
         logging.info(f"Error {e} processing path {path}")
         return {}
 
-def se_offline_learning(train_path_list: list, file_type: str, output_path:str) -> dict:
+def se_offline_learning(train_path_list: list, file_type: str, n_cells_limit: int, output_path:str) -> dict:
     """
     Offline learning for spelling errors
     train_path_list: list of paths to train datasets
     file_type: "csv" or "parquet"
+    n_cells_limit: maximum number of cells to process
     output_path: path to save the output
     """
     se_dict = {}
@@ -74,7 +80,7 @@ def se_offline_learning(train_path_list: list, file_type: str, output_path:str) 
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
         executor_features = []
         for path in train_path_list:
-            executor_features.append(executor.submit(se_process_table, path, tables_output_path, file_type, executor))
+            executor_features.append(executor.submit(se_process_table, path, tables_output_path, file_type, n_cells_limit, executor))
         for feature in executor_features:
             path_dict = feature.result()
             if path_dict is not None:

@@ -4,7 +4,6 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join('.')))
 import ud_utils as udt
-from nltk import word_tokenize
 import numpy as np
 import pandas as pd
 import pickle
