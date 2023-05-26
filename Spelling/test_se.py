@@ -75,7 +75,7 @@ for path in test:
                 else:
                     correct_value = "----Ground Truth is Not Available----"
                 if idx_p and lr != -np.inf:
-                    error = test_column.loc[idx_p] != ground_truth
+                    error = str(test_column.loc[idx_p]) != str(correct_value)
                     row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
                            test_column.loc[idx_p], correct_value, error]
                                 

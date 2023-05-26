@@ -101,7 +101,7 @@ for path in test:
                             list(test_df.columns).index(pair[1]),
                             lr, test_column_1.loc[idx_d], test_column_2.loc[idx_d],
                             correct_value_1, correct_value_2,
-                            correct_value_1 != test_column_1.loc[idx_d] or correct_value_2 != test_column_2.loc[idx_d]]
+                            str(correct_value_1) != str(test_column_1.loc[idx_d]) or str(correct_value_2) != str(test_column_2.loc[idx_d])]
                         fd_results.loc[len(fd_results)] = row
                         fd_results_table.loc[len(fd_results_table)] = row
 

@@ -87,7 +87,7 @@ for path in test:
                 if duplicate_idx and lr != -np.inf:
                     row = ["uniqueness", path, test_column_name, duplicate_idx,
                         list(test_df.columns).index(test_column_name), lr,
-                        test_column.loc[duplicate_idx], correct_value, correct_value != test_column.loc[duplicate_idx]]
+                        test_column.loc[duplicate_idx], correct_value, str(correct_value) != str(test_column.loc[duplicate_idx])]
 
                     uniqueness_results.loc[len(uniqueness_results)] = row
                     uniqueness_results_table.loc[len(uniqueness_results_table)] = row
