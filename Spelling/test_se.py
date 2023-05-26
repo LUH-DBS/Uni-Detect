@@ -79,9 +79,9 @@ for path in test:
                     row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
                            test_column.loc[idx_p], correct_value, error]
                                 
-                spelling_results.loc[len(spelling_results)] = row
-                spelling_results_table.loc[len(spelling_results_table)] = row
-    
+                    spelling_results.loc[len(spelling_results)] = row
+                    spelling_results_table.loc[len(spelling_results_table)] = row
+        
         with open(os.path.join(tables_output_path, (os.path.basename(path).removesuffix(f'.{file_type}') + ".pickle")), 'wb') as f:
             pickle.dump(spelling_results_table, f)
     except Exception as e:
