@@ -104,7 +104,7 @@ for path in test:
                 if max_idx != -1:
                     row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
                             lr,
-                            test_column.loc[max_idx], correct_value, correct_value != test_column.loc[max_idx]]                       
+                            test_column.loc[max_idx], correct_value, str(correct_value) != str(test_column.loc[max_idx])]                       
                     no_results.loc[len(no_results)] = row
                     no_results_table.loc[len(no_results_table)] = row
         logging.info(f"no test for {path} is done")
