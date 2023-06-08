@@ -1,6 +1,7 @@
 {
-  'log_path': Log/offline_no,
-  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train_path.pkl,
+  'log_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/Log/WDC-limited/offline_no,
+  'train_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/WDC/WDC_train_path_list.pkl,
   'file_type': csv,
-  'output_path': output
+  'output_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-limited,
+  'n_cells_limit': 100000
 }

@@ -46,10 +46,10 @@ def create_aggregated_lakes(separated_sandbox_path, aggregated_dirty_sandbox_pat
         pickle.dump(tables_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-separated_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/data-gov-sandbox"
-aggregated_dirty_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_dirty"
-aggregated_clean_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_clean"
-results_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov"
+separated_sandbox_path = "datasets/Kaggle_8_tables/separated"
+aggregated_dirty_sandbox_path = "datasets/Kaggle_8_tables/aggregated_dirty"
+aggregated_clean_sandbox_path = "datasets/Kaggle_8_tables/aggregated_clean"
+results_path = "datasets/Kaggle_8_tables"
 dirty_file_name = "dirty_clean.csv"
 clean_file_name = "clean.csv"
 

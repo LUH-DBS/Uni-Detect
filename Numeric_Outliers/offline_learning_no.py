@@ -31,7 +31,7 @@ def no_process_col(path: str, col_name: str, train_df: pd.DataFrame) -> tuple[st
         return col_id, None
     
 # Define the function to be applied to each path
-def no_process_table(path: str, output_path:str, file_type: str, executor: Executor) -> dict:
+def no_process_table(path: str, output_path:str, file_type: str, executor: Executor, n_cells_limit: int) -> dict:
     """
     Run numeric outliers offline learning for a single table
     :param path: path to the train table
@@ -45,20 +45,22 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
             train_df = pd.read_parquet(path)
         else:
             train_df = pd.read_csv(path)
-        
-        # Get only numeric columns
-        train_df_no = train_df.select_dtypes(include=[np.number])
-        path_no_dict = {}
-        executor_features = []
-        for col_name in train_df_no.columns:
-            executor_features.append(executor.submit(no_process_col, path, col_name, train_df_no))
+        if train_df.shape[0] * train_df.shape[1] < n_cells_limit:
+            # Get only numeric columns
+            train_df_no = train_df.select_dtypes(include=[np.number])
+            path_no_dict = {}
+            executor_features = []
+            for col_name in train_df_no.columns:
+                executor_features.append(executor.submit(no_process_col, path, col_name, train_df_no))
 
-        for feature in executor_features:
-            col_id, col_measures = feature.result()
-            path_no_dict[col_id] = col_measures
+            for feature in executor_features:
+                col_id, col_measures = feature.result()
+                path_no_dict[col_id] = col_measures
 
-        logging.info(f"Processed path {path}, df shape: {train_df.shape}, df_no shape: {train_df_no.shape}")
-
+            logging.info(f"Processed path {path}, df shape: {train_df.shape}, df_no shape: {train_df_no.shape}")
+        else:
+            logging.info(f"Skipping path {path}, df shape: {train_df.shape}")
+            path_no_dict = {}
         # Save the dictionary for the table to disk
         with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_no_dict, f)
@@ -68,7 +70,7 @@ def no_process_table(path: str, output_path:str, file_type: str, executor: Execu
         logging.error(f"Error processing path {path}: {e}")
         return {}
         
-def no_offline_learning(train_path_list: list, file_type: str, output_path:str) -> dict:
+def no_offline_learning(train_path_list: list, file_type: str, output_path:str, n_cells_limit:int) -> dict:
     """
     Run numeric outliers offline learning
     :param train_path_list: list of paths to train tables
@@ -82,11 +84,8 @@ def no_offline_learning(train_path_list: list, file_type: str, output_path:str) 
         os.makedirs(tables_output_path)
     # Run offline learning in parallel using all the cores available
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        executor_features = []
         for path in train_path_list:
-            executor_features.append(executor.submit(no_process_table, path, tables_output_path, file_type, executor))
-        for feature in executor_features:
-            path_dict = feature.result()
+            path_dict = no_process_table(path, tables_output_path, file_type, executor, n_cells_limit)
             no_dict.update(path_dict)
     
     # Save the dictionary to disk
