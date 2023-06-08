@@ -1,10 +1,10 @@
 {
-  'log_path': Log/test_fd.log,
-  'fd_pkl_path': output/fd_dict.pickle,
-  'tokens_pkl_path': output/tokens_dict.pkl,
-  'test_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/test_path.pkl,
+  'log_path': Log/kaggle-8/test_fd.log,
+  'fd_pkl_path': output/data-gov-old/fd_dict.pickle,
+  'tokens_pkl_path': output/data-gov-old/tokens_dict.pkl,
+  'test_pkl_path': datasets/Kaggle_8_tables/test_path.pkl,
   'file_type': csv,
-  'output_path': output,
+  'output_path': output/kaggle-8,
   'ground_truth_available': False,
-  'ground_truth_path': ''
+  'ground_truth_path': '/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/Kaggle_8_tables/aggregated_clean'
 }

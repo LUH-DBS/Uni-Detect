@@ -25,9 +25,9 @@ def create_path_pkl(root_path: str, file_type: str, dest_path: str, pkl_file_nam
         pickle.dump(path, f)
 
 if __name__ == "__main__":
-    train_root_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake"
-    test_root_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake"
+    # train_root_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake"
+    test_root_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/Kaggle_8_tables/aggregated_dirty"
     file_type = "csv"
-    dest_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake"
-    create_path_pkl(train_root_path, file_type, dest_path, "train_path.pkl")
+    dest_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/Kaggle_8_tables/"
+    # create_path_pkl(train_root_path, file_type, dest_path, "train_path.pkl")
     create_path_pkl(test_root_path, file_type, dest_path, "test_path.pkl")

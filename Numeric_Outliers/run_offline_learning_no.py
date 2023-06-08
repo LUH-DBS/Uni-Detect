@@ -24,6 +24,6 @@ with open(config['train_pkl_path'], 'rb') as f:
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=RuntimeWarning)
     t0 = time.time()
-    no_offline_learning(train_path_list, config['file_type'], config['output_path'])
+    no_offline_learning(train_path_list, config['file_type'], config['output_path'], config['n_cells_limit'])
     t1 = time.time()
     logging.info(f"No Time: {t1-t0}")

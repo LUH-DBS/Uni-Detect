@@ -44,13 +44,13 @@ def se_process_table(path: str, output_path: str, file_type: str, n_cells_limit:
             train_df = pd.read_csv(path)
         
         if train_df.shape[0] * train_df.shape[1] < n_cells_limit:
-            executor_features = []
-            for col_name in train_df.columns:
-                executor_features.append(executor.submit(se_process_col, path, col_name, train_df))
-
             path_se_dict = {}
-            for feature in executor_features:
-                col_id, col_measures = feature.result()
+            executor_futures = []
+            for col_name in train_df.columns:
+                executor_futures.append(executor.submit(se_process_col, path, col_name, train_df))
+
+            for future in executor_futures:
+                col_id, col_measures = future.result()
                 if col_measures is not None:
                     path_se_dict[col_id] = col_measures
             # Save the dictionary for the table to disk
@@ -80,11 +80,8 @@ def se_offline_learning(train_path_list: list, file_type: str, n_cells_limit: in
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
         executor_features = []
         for path in train_path_list:
-            executor_features.append(executor.submit(se_process_table, path, tables_output_path, file_type, n_cells_limit, executor))
-        for feature in executor_features:
-            path_dict = feature.result()
-            if path_dict is not None:
-                se_dict.update(path_dict)
+            path_dict = se_process_table(path, tables_output_path, file_type, n_cells_limit, executor)
+            se_dict.update(path_dict)
     logging.info(f"Writting se_dict")
     with open(os.path.join(output_path, "se_dict.pickle"), 'wb') as f:
         pickle.dump(se_dict, f)

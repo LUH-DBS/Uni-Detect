@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Python: Current File",
             "type": "python",
@@ -12,7 +13,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["/home/fatemeh/EDS-BaseLines/Uni-Detect/Numeric_Outliers/Config/test_no_config.yml"]
+            "args": ["/home/fatemeh/EDS-BaseLines/Uni-Detect/Spelling/Config/test_se_config.yml"]
         }
     ]
 }
