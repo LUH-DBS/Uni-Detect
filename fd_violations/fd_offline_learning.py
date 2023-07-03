@@ -80,11 +80,8 @@ def fd_offline_learning(train: list, file_type: str, output_path: str, tokens_di
     if not os.path.exists(tables_output_path):
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        executor_features = []
         for path in train:
-            executor_features.append(executor.submit(fd_process_table, path, tables_output_path, file_type, tokens_dict, executor))
-        for feature in executor_features:
-            table_fd_dict = feature.result()
+            table_fd_dict = fd_process_table(path, tables_output_path, file_type, tokens_dict, executor)
             if table_fd_dict is not None:
                 fd_dict.update(table_fd_dict)
     logging.info(f"Writing fd_dict to {output_path}")
