@@ -89,11 +89,8 @@ def uv_offline_learning(train_path_list: list, file_type: str, output_path: str,
     if not os.path.exists(tables_output_path):
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
-        executor_features = []
         for path in train_path_list:
-            executor_features.append(executor.submit(uv_process_table, path, tables_output_path, file_type, tokens_dict, executor))
-        for feature in executor_features:
-            path_dict = feature.result()
+            path_dict = uv_process_table(path, tables_output_path, file_type, tokens_dict, executor)
             if path_dict is not None:
                 uv_dict.update(path_dict)
     logging.info(f"Writting uv_dict")

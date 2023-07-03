@@ -77,13 +77,16 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
     :return: float 
         The average prevalence of the column.
     """
-    tokens_set_col = set()
-    prev_sum = -1
     col = col.astype(str)
-
-    tokens_list_col = [token for idx, value in col.items() for token in value.split()]
-    tokens_set_col = set(tokens_list_col)
-    prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_col)
-    prev_avg = prev_sum / len(tokens_set_col)
-    prev_avg_range = get_range_avg_pre(prev_avg)
+    col_prev_sum = 0
+    for idx, value in col.items(): 
+        tokens_list_val = []
+        for token in value.split():
+            tokens_list_val.append(token)
+        tokens_set_val = set(tokens_list_col)
+        prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_val)
+        prev_avg = prev_sum / len(tokens_set_val)
+        col_prev_sum += prev_avg
+    col_prev_avg = col_prev_sum/len(col.items())
+    prev_avg_range = get_range_avg_pre(col_prev_sum)
     return prev_avg_range
