@@ -58,8 +58,10 @@ def fd_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
         with open(output_path + "/" + os.path.basename(path).removesuffix("." + file_type) + ".pickle", 'wb') as f:
             pickle.dump(path_fd_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
+        return path_fd_dict
     except Exception as e:
         logging.info(f"Error {e} processing path {path}")
+        return {} 
 
 def fd_offline_learning(train: list, file_type: str, output_path: str, tokens_dict: dict) -> dict:
     """

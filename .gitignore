@@ -11,4 +11,6 @@ output
 Utils/WDC
 Utils/tokens_dir
 Utils/tokens_dir_10k
+Utils/tokens-dict*
 
+Utils/tokens_dict.yml
