@@ -37,7 +37,7 @@ spelling_results = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_
 t_init = time.time()
 for path in test:
     spelling_results_table = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
-                                         'ground_truth', 'error'])
+                                        'ground_truth', 'error'])
     try:
         if file_type == "parquet":
             test_df = pd.read_parquet(path)
@@ -51,7 +51,7 @@ for path in test:
             number_of_rows_range = udt.get_range_count(test_column.count())
             range_mpd = udt.get_range_mpd(avg_len_diff_tokens)
 
-            if mpd_do != mpd_d:
+            if not np.isnan(mpd_d) and not np.isnan(mpd_do) and mpd_do != mpd_d:
                 for col_id in se_dict.keys():
                     str_col = test_column.astype(str)
                     test_col_dtype = "alnumeric" if str_col.str.isalnum().all() else test_column.dtype,
@@ -77,7 +77,7 @@ for path in test:
                 if idx_p and lr != -np.inf:
                     error = str(test_column.loc[idx_p]) != str(correct_value)
                     row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
-                           test_column.loc[idx_p], correct_value, error]
+                        test_column.loc[idx_p], correct_value, error]
                                 
                     spelling_results.loc[len(spelling_results)] = row
                     spelling_results_table.loc[len(spelling_results_table)] = row
