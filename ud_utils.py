@@ -83,10 +83,10 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
         tokens_list_val = []
         for token in value.split():
             tokens_list_val.append(token)
-        tokens_set_val = set(tokens_list_col)
+        tokens_set_val = set(tokens_list_val)
         prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_val)
         prev_avg = prev_sum / len(tokens_set_val)
         col_prev_sum += prev_avg
-    col_prev_avg = col_prev_sum/len(col.items())
+    col_prev_avg = col_prev_sum/len(col)
     prev_avg_range = get_range_avg_pre(col_prev_sum)
     return prev_avg_range
