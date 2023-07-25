@@ -91,8 +91,13 @@ for path in test:
                         if ground_truth:
                             ground_truth_path = config['ground_truth_path']
                             clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
-                            correct_value_1 = clean_df[pair[0]].loc[idx_d]
-                            correct_value_2 = clean_df[pair[1]].loc[idx_d]
+                            clean_col_idx_0 = list(test_df.columns).index(pair[0])
+                            clean_col_idx_1 = list(test_df.columns).index(pair[1])
+                            correct_value_1 = clean_df[clean_df.columns[clean_col_idx_0]].values.astype(str)[idx_d]
+                            correct_value_2 = clean_df[clean_df.columns[clean_col_idx_1]].values.astype(str)[idx_d]
+                            dirty_value_1 = test_column_1.values.astype(str)[idx_d]
+                            dirty_value_2 = test_column_2.values.astype(str)[idx_d]
+                            
                         else:
                             correct_value_1 = "----Ground Truth is Not Available----"
                             correct_value_2 = "----Ground Truth is Not Available----"
@@ -101,7 +106,7 @@ for path in test:
                             list(test_df.columns).index(pair[1]),
                             lr, test_column_1.loc[idx_d], test_column_2.loc[idx_d],
                             correct_value_1, correct_value_2,
-                            str(correct_value_1) != str(test_column_1.loc[idx_d]) or str(correct_value_2) != str(test_column_2.loc[idx_d])]
+                            str(correct_value_1) != str(dirty_value_1) or str(correct_value_2) != str(dirty_value_2)]
                         fd_results.loc[len(fd_results)] = row
                         fd_results_table.loc[len(fd_results_table)] = row
 

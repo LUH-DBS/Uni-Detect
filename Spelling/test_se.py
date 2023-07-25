@@ -44,7 +44,7 @@ for path in test:
         else:
             test_df = pd.read_csv(path)
         
-        for test_column_name in test_df.columns:
+        for test_column_idx, test_column_name in enumerate(test_df.columns):
             test_column = test_df[test_column_name]
             mpd_d, mpd_do, avg_len_diff_tokens, idx_p = se.perturbation(test_column)
             p_dt, p_dot = 0, 0
@@ -71,11 +71,13 @@ for path in test:
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']
                     clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
-                    correct_value = clean_df[test_column_name].loc[idx_p]
+                    test_column_name_clean = clean_df.columns[test_column_idx]
+                    correct_value = clean_df[test_column_name_clean].values.astype(str)[idx_p]
+                    dirty_value = test_df[test_df.columns[test_column_idx]].values.astype(str)[idx_p]
                 else:
                     correct_value = "----Ground Truth is Not Available----"
                 if idx_p and lr != -np.inf:
-                    error = str(test_column.loc[idx_p]) != str(correct_value)
+                    error = str(correct_value) != str(dirty_value)
                     row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
                         test_column.loc[idx_p], correct_value, error]
                                 
