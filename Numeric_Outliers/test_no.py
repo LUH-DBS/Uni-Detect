@@ -44,7 +44,7 @@ for path in test:
     try:
         # Load test table and get numeric columns
         test_df = pd.read_csv(path).select_dtypes(include=[np.number])
-        for test_column_name in test_df.columns:
+        for test_column_idx, test_column_name in enumerate(test_df.columns):
             p_dt, p_t_dt, p_dot, p_t_dot, max_idx, max_idx_t = 0, 0, 0, 0, -1, -1
             try:
                 test_column = test_df[test_column_name]
@@ -97,14 +97,15 @@ for path in test:
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']
                     clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
-                    correct_value = clean_df[test_column_name].loc[max_idx]
+                    correct_value = clean_df[clean_df.columns[test_column_idx]].values.astype(str)[max_idx]
+                    dirty_value = test_df[test_df.columns[test_column_idx]].values.astype(str)[max_idx]
                 else:
                     correct_value = "----Ground Truth is Not Available----"
 
                 if max_idx != -1:
                     row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
                             lr,
-                            test_column.loc[max_idx], correct_value, str(correct_value) != str(test_column.loc[max_idx])]                       
+                            test_column.loc[max_idx], correct_value, str(correct_value) != str(dirty_value)]                       
                     no_results.loc[len(no_results)] = row
                     no_results_table.loc[len(no_results_table)] = row
         logging.info(f"no test for {path} is done")
