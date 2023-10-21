@@ -46,6 +46,7 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
         return None, None, None, None
     sdm = squareform(distance_matrix)
     np.nan_to_num(sdm, np.inf)
+    # if sdm.sum().sum() != 0:
     sdm[sdm == 0] = np.inf
     mpd = np.nanmin(sdm)
     idx = np.unravel_index(int(sdm.argmin()), sdm.shape)

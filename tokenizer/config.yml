@@ -1,0 +1,7 @@
+{
+  'log_path': Log/tokenizer_dgov_141,
+  'train_path_list':/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/test_path.pkl, 
+  'file_type': csv,
+  'output_path': /home/fatemeh/results-aug/Uni-Detect/DGov-141/tokens,
+  'n_cells_limit': 1000000000
+}

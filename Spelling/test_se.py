@@ -54,7 +54,10 @@ for path in test:
             if not np.isnan(mpd_d) and not np.isnan(mpd_do) and mpd_do != mpd_d:
                 for col_id in se_dict.keys():
                     str_col = test_column.astype(str)
-                    test_col_dtype = "alnumeric" if str_col.str.isalnum().all() else test_column.dtype,
+                    if str_col.str.isnumeric().all():
+                        test_col_dtype = "alnumeric"
+                    else:
+                        test_col_dtype = test_column.dtype
                     if se_dict[col_id]["d_type"] != test_col_dtype:
                         continue
                     if se_dict[col_id]["number_of_rows_range"] != number_of_rows_range:
@@ -67,6 +70,7 @@ for path in test:
                         p_dt = p_dt + 1
                     if train_mpd_d <= mpd_d and train_mpd_do >= mpd_do:
                         p_dot = p_dot + 1
+                    logging.info(f"p_dt: {p_dt}, p_dot: {p_dot}")
                 lr = p_dot / p_dt if p_dt else -np.inf
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']

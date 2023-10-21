@@ -46,11 +46,15 @@ def create_aggregated_lakes(separated_sandbox_path, aggregated_dirty_sandbox_pat
         pickle.dump(tables_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-separated_sandbox_path = "datasets/Kaggle_8_tables/separated"
-aggregated_dirty_sandbox_path = "datasets/Kaggle_8_tables/aggregated_dirty"
-aggregated_clean_sandbox_path = "datasets/Kaggle_8_tables/aggregated_clean"
-results_path = "datasets/Kaggle_8_tables"
-dirty_file_name = "dirty_clean.csv"
+separated_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/Separated"
+aggregated_dirty_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/aggregated_dirty"
+aggregated_clean_sandbox_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/aggregated_clean"
+if not os.path.exists(aggregated_dirty_sandbox_path):
+    os.mkdir(aggregated_dirty_sandbox_path)
+if not os.path.exists(aggregated_clean_sandbox_path):
+    os.mkdir(aggregated_clean_sandbox_path)
+results_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/"
+dirty_file_name = "dirty.csv"
 clean_file_name = "clean.csv"
 
 create_aggregated_lakes(separated_sandbox_path, aggregated_dirty_sandbox_path, aggregated_clean_sandbox_path, dirty_file_name, clean_file_name, results_path)
