@@ -64,8 +64,10 @@ for path in test:
             try:
                 p_dt, p_dot = 0, 0
                 if duplicate_idx != -1 and uniqueness_d != uniqueness_do:
+                    str_col = test_column.astype(str)
+                    test_col_dtype = "alnumeric" if str_col.str.isalnum().all() else test_column.dtype
                     for col_id in uv_dict.keys():
-                        if uv_dict[col_id]["d_type"] != test_column.dtype:
+                        if uv_dict[col_id]["d_type"] != test_col_dtype:
                             continue
                         if uv_dict[col_id]["number_of_rows_range"] != number_of_rows_range:
                             continue

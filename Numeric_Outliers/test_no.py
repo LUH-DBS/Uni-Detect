@@ -96,12 +96,14 @@ for path in test:
 
                 if ground_truth:
                     ground_truth_path = config['ground_truth_path']
-                    clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path)))
+                    clean_df = pd.read_csv(os.path.join(ground_truth_path, os.path.basename(path))).select_dtypes(include=[np.number])
                     correct_value = clean_df[clean_df.columns[test_column_idx]].values.astype(str)[max_idx]
-                    dirty_value = test_df[test_df.columns[test_column_idx]].values.astype(str)[max_idx]
+                    
                 else:
                     correct_value = "----Ground Truth is Not Available----"
 
+                dirty_value = test_df[test_df.columns[test_column_idx]].values.astype(str)[max_idx]
+                
                 if max_idx != -1:
                     row = ["no", path, test_column_name, max_idx, list(test_df.columns).index(test_column_name),
                             lr,

@@ -9,7 +9,7 @@ def getlist_of_dicts(tokens_dir_path):
     with open("/home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-5m/path.pkl", 'rb') as f:
         paths = pickle.load(f)
 
-    file_names = [os.path.basename(p) for p in paths]
+    file_names = [os.path.basename(p) for p in paths[0:1000000]]
     print("Start loading tokens dict")
     td = []
     for path in file_names:
@@ -40,10 +40,10 @@ def merge_dicts_parallel(list_of_dicts, num_processes, output_path):
                 merged_dict[key] = merged_dict.get(key, 0) + value
             pbar.update(1)
 
-    with open(os.path.join(output_path, 'tokens_dict_5m_mrjob.pkl'), 'wb') as f:
+    with open(os.path.join(output_path, 'tokens_dict_1m_mrjob.pkl'), 'wb') as f:
         pickle.dump(merged_dict, f)
     return merged_dict
 
 if __name__ == '__main__':
     td = getlist_of_dicts('/home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/tokens_dir')
-    merge_dicts_parallel(td, 64, '/home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-5m')
+    merge_dicts_parallel(td, 64, '/home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-1m')

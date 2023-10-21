@@ -1,7 +1,0 @@
-{
-  'log_path': Log/WDC-limited/tokenizer,
-  'train_path_list': /home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/WDC/WDC_train_path_list.pkl,
-  'output_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-limited,
-  'file_type': csv,
-  'n_cells_limit': 100000,
-}
