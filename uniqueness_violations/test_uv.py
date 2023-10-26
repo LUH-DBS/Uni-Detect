@@ -14,8 +14,9 @@ import utils.ud_utils as udt
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
+os.makedirs(config["log_path"], exist_ok=True)
 logging.basicConfig(
-    filename=config["log_path"] + "_app.log",
+    filename=config["log_path"] + "/app.log",
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,

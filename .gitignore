@@ -2,7 +2,7 @@ pkl/*
 notebooks/*
 results/*
 __pycache__
-Log
+logs
 datasets
 train_path.pkl
 test_path.pkl

@@ -111,8 +111,9 @@ if __name__ == "__main__":
         config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
     # Set up logging
+    os.makedirs(config["log_path"], exist_ok=True)
     logging.basicConfig(
-        filename=config["log_path"] + "_app.log",
+        filename=config["log_path"] + "/app.log",
         filemode="w",
         format="%(name)s - %(levelname)s - %(message)s",
         level=logging.INFO,

@@ -1,7 +1,7 @@
 {
-  'log_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/Log/WDC-limited/offline_uv_5m,
-  'train_pkl_path': /home/fatemeh/results/Uni-Detect/output/WDC-5m/path.pkl,
-  'tokens_dict_path': /home/fatemeh/results/Uni-Detect/output/WDC-5m/tokens_dict_5m_mrjob.pkl,
+  'log_path': logs/WDC-limited/offline_uv_5m,
+  'train_pkl_path': output/WDC-5m/path.pkl,
+  'tokens_dict_path': output/WDC-5m/tokens_dict_5m_mrjob.pkl,
   'file_type': csv,
-  'output_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-5m
+  'output_path': output/WDC-5m
 }
