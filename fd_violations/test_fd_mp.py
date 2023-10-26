@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def process_pair(test_df, pair, path, fd_dict, tokens_dict, ground_truth, config):

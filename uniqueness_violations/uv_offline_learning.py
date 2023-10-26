@@ -9,7 +9,7 @@ import uniqueness as uv
 from joblib import cpu_count
 
 sys.path.append(os.path.abspath(os.path.join(".")))
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def uv_process_col(

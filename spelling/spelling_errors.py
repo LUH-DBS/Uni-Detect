@@ -9,7 +9,7 @@ from Levenshtein import distance
 from scipy.spatial.distance import pdist, squareform
 
 sys.path.append(os.path.abspath(os.path.join(".")))
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def get_avg_diff_tokens(value_1: str, value_2: str) -> float:

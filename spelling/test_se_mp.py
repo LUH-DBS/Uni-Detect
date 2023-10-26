@@ -10,7 +10,7 @@ import pandas as pd
 import spelling_errors as se
 import yaml
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def mapper(args):

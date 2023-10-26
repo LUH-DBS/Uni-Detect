@@ -6,7 +6,7 @@ import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(".")))
 import numpy as np
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def get_fr(column_1: pd.Series, column_2: pd.Series) -> tuple[float, int]:

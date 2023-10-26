@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 # Reading config file
 with open(sys.argv[1]) as config_file:

@@ -7,7 +7,7 @@ import pandas as pd
 from scipy import stats
 
 sys.path.append(os.path.abspath(os.path.join(".")))
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def get_max_mad_score(column: pd.Series) -> tuple:

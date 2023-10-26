@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(".")))
 import numpy as np
 import pandas as pd
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 
 def get_uniqueness(column: pd.Series) -> tuple[float, int]:

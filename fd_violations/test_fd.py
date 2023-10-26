@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-import ud_utils as udt
+import utils.ud_utils as udt
 
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
