@@ -1,15 +1,16 @@
-
-from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 import pickle
+from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import spelling_errors as se
 from joblib import cpu_count
 
 
-def se_process_col(path: str, col_name: str, train_df: pd.DataFrame) -> tuple[str, dict]:
+def se_process_col(
+    path: str, col_name: str, train_df: pd.DataFrame
+) -> tuple[str, dict]:
     """
     Run spelling errors offline learning for a single column
     :param path: path to the train table
@@ -28,7 +29,13 @@ def se_process_col(path: str, col_name: str, train_df: pd.DataFrame) -> tuple[st
     return col_id, col_measures
 
 
-def se_process_table(path: str, output_path: str, file_type: str, n_cells_limit: int, executor: ThreadPoolExecutor) -> dict:
+def se_process_table(
+    path: str,
+    output_path: str,
+    file_type: str,
+    n_cells_limit: int,
+    executor: ThreadPoolExecutor,
+) -> dict:
     """
     Run spelling errors offline learning for a single table
     :param path: path to the train table
@@ -42,19 +49,27 @@ def se_process_table(path: str, output_path: str, file_type: str, n_cells_limit:
             train_df = pd.read_parquet(path)
         else:
             train_df = pd.read_csv(path)
-        
+
         if train_df.shape[0] * train_df.shape[1] < n_cells_limit:
             path_se_dict = {}
             executor_futures = []
             for col_name in train_df.columns:
-                executor_futures.append(executor.submit(se_process_col, path, col_name, train_df))
+                executor_futures.append(
+                    executor.submit(se_process_col, path, col_name, train_df)
+                )
 
             for future in executor_futures:
                 col_id, col_measures = future.result()
                 if col_measures is not None:
                     path_se_dict[col_id] = col_measures
             # Save the dictionary for the table to disk
-            with open(output_path + "/" + os.path.basename(path).removesuffix('.' + file_type) + ".pickle", 'wb') as f:
+            with open(
+                output_path
+                + "/"
+                + os.path.basename(path).removesuffix("." + file_type)
+                + ".pickle",
+                "wb",
+            ) as f:
                 pickle.dump(path_se_dict, f)
             logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
             return path_se_dict
@@ -65,7 +80,10 @@ def se_process_table(path: str, output_path: str, file_type: str, n_cells_limit:
         logging.info(f"Error {e} processing path {path}")
         return {}
 
-def se_offline_learning(train_path_list: list, file_type: str, n_cells_limit: int, output_path:str) -> dict:
+
+def se_offline_learning(
+    train_path_list: list, file_type: str, n_cells_limit: int, output_path: str
+) -> dict:
     """
     Offline learning for spelling errors
     train_path_list: list of paths to train datasets
@@ -80,9 +98,11 @@ def se_offline_learning(train_path_list: list, file_type: str, n_cells_limit: in
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
         executor_features = []
         for path in train_path_list:
-            path_dict = se_process_table(path, tables_output_path, file_type, n_cells_limit, executor)
+            path_dict = se_process_table(
+                path, tables_output_path, file_type, n_cells_limit, executor
+            )
             se_dict.update(path_dict)
     logging.info(f"Writting se_dict")
-    with open(os.path.join(output_path, "se_dict.pickle"), 'wb') as f:
+    with open(os.path.join(output_path, "se_dict.pickle"), "wb") as f:
         pickle.dump(se_dict, f)
     return se_dict

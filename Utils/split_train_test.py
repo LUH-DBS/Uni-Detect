@@ -2,7 +2,14 @@ import os
 import random
 import shutil
 
-def split_data(clean_folder_path: str, dirty_folder_path: str, train_folder_path: str, test_folder_path: str, train_percent: float) -> None:
+
+def split_data(
+    clean_folder_path: str,
+    dirty_folder_path: str,
+    train_folder_path: str,
+    test_folder_path: str,
+    train_percent: float,
+) -> None:
     """
     Randomly splits clean and dirty CSV files from given folders into train and test folders.
 
@@ -43,17 +50,34 @@ def split_data(clean_folder_path: str, dirty_folder_path: str, train_folder_path
         dirty_file_path = os.path.join(dirty_folder_path, file_name)
         if i < num_train:
             # Move to train folder
-            dest = {"clean": os.path.join(train_clean_folder_path, file_name), "dirty": os.path.join(train_dirty_folder_path, file_name)}
+            dest = {
+                "clean": os.path.join(train_clean_folder_path, file_name),
+                "dirty": os.path.join(train_dirty_folder_path, file_name),
+            }
         else:
             # Move to test folder
-            dest = {"clean": os.path.join(test_clean_folder_path, file_name), "dirty": os.path.join(test_dirty_folder_path, file_name)}
+            dest = {
+                "clean": os.path.join(test_clean_folder_path, file_name),
+                "dirty": os.path.join(test_dirty_folder_path, file_name),
+            }
         shutil.copyfile(clean_file_path, dest["clean"])
         shutil.copyfile(dirty_file_path, dest["dirty"])
 
+
 if __name__ == "__main__":
-    clean_folder_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_clean"
-    dirty_folder_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_dirty"
+    clean_folder_path = (
+        "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_clean"
+    )
+    dirty_folder_path = (
+        "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/aggregated_dirty"
+    )
     train_folder_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/train"
     test_folder_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/data-gov/test"
     train_percent = 0.8
-    split_data(clean_folder_path, dirty_folder_path, train_folder_path, test_folder_path, train_percent)
+    split_data(
+        clean_folder_path,
+        dirty_folder_path,
+        train_folder_path,
+        test_folder_path,
+        train_percent,
+    )

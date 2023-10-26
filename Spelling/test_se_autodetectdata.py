@@ -1,32 +1,60 @@
+import logging
+import pickle
+import sys
 import time
 
 import numpy as np
-from Spelling import spelling_errors as se
 import pandas as pd
-import ud_utils as udt
-import pickle
-import sys
-import logging
 import yaml
+
+import ud_utils as udt
+from Spelling import spelling_errors as se
 
 with open(sys.argv[1]) as config_file:
     config = yaml.load(config_file, Loader=yaml.SafeLoader)
 
-logging.basicConfig(filename=config['log_path'] + '_app.log', filemode='w',
-                    format='%(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    filename=config["log_path"] + "_app.log",
+    filemode="w",
+    format="%(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
-with open(config['se_pkl_path'], 'rb') as f:
+with open(config["se_pkl_path"], "rb") as f:
     se_dict = pickle.load(f)
     logging.info("se_dict loaded")
-with open(config['test_pkl_path'], 'rb') as f:
+with open(config["test_pkl_path"], "rb") as f:
     test = pickle.load(f)
     logging.info("test_dict loaded")
-spelling_results = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
-                                         'Label', 'error',  'time'])
+spelling_results = pd.DataFrame(
+    columns=[
+        "error_type",
+        "path",
+        "col_name",
+        "row_idx",
+        "col_idx",
+        "LR",
+        "value",
+        "Label",
+        "error",
+        "time",
+    ]
+)
 for path in test:
-    spelling_results_table = pd.DataFrame(columns=['error_type', 'path', 'col_name', 'row_idx', 'col_idx', 'LR', 'value',
-                                         'Label', 'error',  'time'])
+    spelling_results_table = pd.DataFrame(
+        columns=[
+            "error_type",
+            "path",
+            "col_name",
+            "row_idx",
+            "col_idx",
+            "LR",
+            "value",
+            "Label",
+            "error",
+            "time",
+        ]
+    )
 
     t0 = time.time()
     df = pd.read_csv(path)
@@ -54,7 +82,10 @@ for path in test:
                     if se_dict[col_id]["range_mpd"] != range_mpd:
                         continue
 
-                    train_mpd_d, train_mpd_do = se_dict[col_id]["mpd"], se_dict[col_id]["mpd_p"]
+                    train_mpd_d, train_mpd_do = (
+                        se_dict[col_id]["mpd"],
+                        se_dict[col_id]["mpd_p"],
+                    )
                     if train_mpd_d <= mpd_do:
                         p_dt = p_dt + 1
                     if train_mpd_d <= mpd_d and train_mpd_do >= mpd_do:
@@ -69,8 +100,18 @@ for path in test:
                         error = 0
                     else:
                         error = -1
-                    row = ["spelling", path, test_column_name, idx_p, list(test_df.columns).index(test_column_name), lr,
-                           test_column.loc[idx_p], label, error, t1-t0]
+                    row = [
+                        "spelling",
+                        path,
+                        test_column_name,
+                        idx_p,
+                        list(test_df.columns).index(test_column_name),
+                        lr,
+                        test_column.loc[idx_p],
+                        label,
+                        error,
+                        t1 - t0,
+                    ]
                     spelling_results.loc[len(spelling_results)] = row
 
-spelling_results.to_csv(config['output_path'])
+spelling_results.to_csv(config["output_path"])

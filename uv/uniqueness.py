@@ -1,12 +1,13 @@
-from concurrent.futures import ThreadPoolExecutor
 import logging
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join('.')))
-import ud_utils as udt
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(".")))
 import numpy as np
 import pandas as pd
-import pickle
+
+import ud_utils as udt
+
 
 def get_uniqueness(column: pd.Series) -> tuple[float, int]:
     """
@@ -37,18 +38,19 @@ def get_col_measures(col: pd.Series, left_ness: int, tokens_dict: dict) -> dict:
         The leftness of the column.
     :param tokens_dict: dict
         The dictionary of the tokens.
-    :return: dict   
+    :return: dict
     """
     logging.info(f"Start getting measures for column {col.name}")
     col_perturbed = perturbation(col)
     str_col = col.astype(str)
-    col_dict = {"d_type": "alnumeric" if str_col.str.isalnum().all() else col.dtype,
-                "number_of_rows_range": udt.get_range_count(col.count()),
-                "left_ness": left_ness,
-                "avg_col_pre": udt.get_prev_range(tokens_dict, col),
-                "ur": col_perturbed[0] if col_perturbed else np.nan,
-                "ur_p": col_perturbed[1] if col_perturbed else np.nan
-                }
+    col_dict = {
+        "d_type": "alnumeric" if str_col.str.isalnum().all() else col.dtype,
+        "number_of_rows_range": udt.get_range_count(col.count()),
+        "left_ness": left_ness,
+        "avg_col_pre": udt.get_prev_range(tokens_dict, col),
+        "ur": col_perturbed[0] if col_perturbed else np.nan,
+        "ur_p": col_perturbed[1] if col_perturbed else np.nan,
+    }
     return col_dict
 
 
@@ -56,7 +58,7 @@ def perturbation(column: pd.Series) -> tuple[float, float, int]:
     """
     This function perturbs the column and returns the uniqueness of the original column, the uniqueness of the
     perturbed column, and the index of the duplicate value in the original column.
-    
+
     Parameters
     ----------
     :param: column : pd.Series

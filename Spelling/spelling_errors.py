@@ -1,12 +1,14 @@
 import logging
-import pandas as pd
+import os
+import sys
+import time
+
 import numpy as np
+import pandas as pd
 from Levenshtein import distance
 from scipy.spatial.distance import pdist, squareform
-import sys
-import time 
-import os
-sys.path.append(os.path.abspath(os.path.join('.')))
+
+sys.path.append(os.path.abspath(os.path.join(".")))
 import ud_utils as udt
 
 
@@ -56,17 +58,22 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
         i_p, j_p = -1, -1
     avg_diff_tokens = get_avg_diff_tokens(column.loc[i_p], column.loc[j_p])
     avg_len_diff_tokens = udt.get_range_mpd(avg_diff_tokens) if avg_diff_tokens else -1
-    logging.info(f"Time to calculate mpd for a column with size {column.shape}: {time.time() - t0}")
+    logging.info(
+        f"Time to calculate mpd for a column with size {column.shape}: {time.time() - t0}"
+    )
     return mpd, i_p, j_p, avg_len_diff_tokens
+
 
 def get_col_measures(col):
     col_perturbed = perturbation(col)
     str_col = col.astype(str)
-    col_dict = {"d_type": "alnumeric" if str_col.str.isalnum().all() else col.dtype,
-                "number_of_rows_range": udt.get_range_count(col.count()),
-                "range_mpd": col_perturbed[2] if col_perturbed else np.nan,
-                "mpd": col_perturbed[0] if col_perturbed else np.nan,
-                "mpd_p": col_perturbed[1] if col_perturbed else np.nan}
+    col_dict = {
+        "d_type": "alnumeric" if str_col.str.isalnum().all() else col.dtype,
+        "number_of_rows_range": udt.get_range_count(col.count()),
+        "range_mpd": col_perturbed[2] if col_perturbed else np.nan,
+        "mpd": col_perturbed[0] if col_perturbed else np.nan,
+        "mpd_p": col_perturbed[1] if col_perturbed else np.nan,
+    }
     return col_dict
 
 
@@ -93,4 +100,3 @@ def perturbation(column: pd.Series) -> tuple[float, float, float, int]:
     else:
         mpd_do, idx = mpd_do_test_1, i_p
     return mpd_d, mpd_do, avg_len_diff_tokens, idx
-

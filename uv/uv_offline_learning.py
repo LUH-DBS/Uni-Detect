@@ -1,18 +1,20 @@
-
-from concurrent.futures import ThreadPoolExecutor
-import os
-import sys
-
-from joblib import cpu_count
-import uniqueness as uv
-import pandas as pd
 import logging
+import os
 import pickle
+import sys
+from concurrent.futures import ThreadPoolExecutor
 
-sys.path.append(os.path.abspath(os.path.join('.')))
+import pandas as pd
+import uniqueness as uv
+from joblib import cpu_count
+
+sys.path.append(os.path.abspath(os.path.join(".")))
 import ud_utils as udt
 
-def uv_process_col(path: str, col_name: str, train_df: pd.DataFrame, tokens_dict: dict) -> tuple[str, dict]:
+
+def uv_process_col(
+    path: str, col_name: str, train_df: pd.DataFrame, tokens_dict: dict
+) -> tuple[str, dict]:
     """
     Run uniqueness offline learning for a single column
 
@@ -29,12 +31,20 @@ def uv_process_col(path: str, col_name: str, train_df: pd.DataFrame, tokens_dict
     # Ignore empty cols
     if not col.empty:
         # Get column measures using the provided function
-        col_measures = uv.get_col_measures(col, list(train_df.columns).index(col_name), tokens_dict)
+        col_measures = uv.get_col_measures(
+            col, list(train_df.columns).index(col_name), tokens_dict
+        )
     logging.info(f"Finish col_id: {col_id} df: {path}")
     return col_id, col_measures
 
 
-def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: dict, executor: ThreadPoolExecutor) -> dict:
+def uv_process_table(
+    path: str,
+    output_path: str,
+    file_type: str,
+    tokens_dict: dict,
+    executor: ThreadPoolExecutor,
+) -> dict:
     """
     Run uniqueness offline learning for a single table
 
@@ -56,23 +66,34 @@ def uv_process_table(path: str, output_path: str, file_type: str, tokens_dict: d
 
         executor_features = []
         for col_name in train_df.columns:
-            executor_features.append(executor.submit(uv_process_col, path, col_name, train_df, tokens_dict))
+            executor_features.append(
+                executor.submit(uv_process_col, path, col_name, train_df, tokens_dict)
+            )
         path_uv_dict = {}
         for feature in executor_features:
             col_id, col_measures = feature.result()
             if col_measures is not None:
                 path_uv_dict[col_id] = col_measures
         # Save the dictionary for the table to disk
-        with open(output_path + "/" + os.path.basename(path).removesuffix("." + file_type) + ".pickle", 'wb') as f:
+        with open(
+            output_path
+            + "/"
+            + os.path.basename(path).removesuffix("." + file_type)
+            + ".pickle",
+            "wb",
+        ) as f:
             pickle.dump(path_uv_dict, f)
         logging.info(f"Finish df: {path}, df shape: {train_df.shape}")
         return path_uv_dict
-    except Exception as exception :
+    except Exception as exception:
         logging.error(f"Error: {exception }")
         logging.info(f"Error processing df: {path}, df shape: {train_df.shape}")
-    return  {}
+    return {}
 
-def uv_offline_learning(train_path_list: list, file_type: str, output_path: str, tokens_dict: dict) -> None:
+
+def uv_offline_learning(
+    train_path_list: list, file_type: str, output_path: str, tokens_dict: dict
+) -> None:
     """
     Run uniqueness offline learning for a list of tables
 
@@ -90,9 +111,11 @@ def uv_offline_learning(train_path_list: list, file_type: str, output_path: str,
         os.makedirs(tables_output_path)
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
         for path in train_path_list:
-            path_dict = uv_process_table(path, tables_output_path, file_type, tokens_dict, executor)
+            path_dict = uv_process_table(
+                path, tables_output_path, file_type, tokens_dict, executor
+            )
             if path_dict is not None:
                 uv_dict.update(path_dict)
     logging.info(f"Writting uv_dict")
-    with open(os.path.join(output_path, "uv_dict.pickle"), 'wb') as f:
+    with open(os.path.join(output_path, "uv_dict.pickle"), "wb") as f:
         pickle.dump(uv_dict, f)

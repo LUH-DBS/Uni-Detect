@@ -1,13 +1,10 @@
-from concurrent.futures import ThreadPoolExecutor
-import logging
-import os
-import pickle
 import pandas as pd
+
 
 def get_range_count(num_rows: int) -> int:
     """
     Get the range of the number of rows
-    
+
     parametrers:
     ------------
     :param num_rows: number of rows
@@ -25,10 +22,11 @@ def get_range_count(num_rows: int) -> int:
         return 4
     return 5
 
+
 def get_range_mpd(mpd_diff: float) -> int:
     """
     Get the range of the average length of the tokens that difer between the MPD pair
-    
+
     parametrers:
     ------------
     :param mpd_diff: minimum pairwise distance
@@ -43,6 +41,7 @@ def get_range_mpd(mpd_diff: float) -> int:
     if mpd_diff <= 20:
         return 3
     return 4
+
 
 def get_range_avg_pre(avg_tokens: float) -> int:
     """
@@ -65,6 +64,7 @@ def get_range_avg_pre(avg_tokens: float) -> int:
         return 4
     return 5
 
+
 def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
     """
     This function calculates average prevalenve of the column.
@@ -74,12 +74,12 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
         The dictionary of the tokens.
     :param col: pd.Series
         The column to calculate the average prevalence for.
-    :return: float 
+    :return: float
         The average prevalence of the column.
     """
     col = col.astype(str)
     col_prev_sum = 0
-    for idx, value in col.items(): 
+    for idx, value in col.items():
         tokens_list_val = []
         for token in value.split():
             tokens_list_val.append(token)
@@ -87,6 +87,6 @@ def get_prev_range(tokens_dict: dict, col: pd.Series) -> float:
         prev_sum = sum(tokens_dict.get(token, 1) for token in tokens_set_val)
         prev_avg = prev_sum / len(tokens_set_val)
         col_prev_sum += prev_avg
-    col_prev_avg = col_prev_sum/len(col)
+    col_prev_avg = col_prev_sum / len(col)
     prev_avg_range = get_range_avg_pre(col_prev_sum)
     return prev_avg_range
