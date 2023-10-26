@@ -61,6 +61,6 @@ def get_dict(tokens_dir_path, output_path):
 
 if __name__ == "__main__":
     get_dict(
-        "/home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/tokens_dir",
-        "/home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/tokens-dict-3",
+        "/home/fatemeh/EDS-BaseLines/Uni-Detect/utils/tokens_dir",
+        "/home/fatemeh/EDS-BaseLines/Uni-Detect/utils/tokens-dict-3",
     )

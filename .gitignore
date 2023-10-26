@@ -8,9 +8,9 @@ train_path.pkl
 test_path.pkl
 test.ipynb
 output
-Utils/WDC
-Utils/tokens_dir
-Utils/tokens_dir_10k
-Utils/tokens-dict*
+utils/WDC
+utils/tokens_dir
+utils/tokens_dir_10k
+utils/tokens-dict*
 
-Utils/tokens_dict.yml
+utils/tokens_dict.yml

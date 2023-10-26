@@ -53,5 +53,5 @@ def merge_dicts_parallel(list_of_dicts, num_processes, output_path):
 
 
 if __name__ == "__main__":
-    td = getlist_of_dicts("/home/fatemeh/EDS-BaseLines/Uni-Detect/Utils/tokens_dir")
+    td = getlist_of_dicts("/home/fatemeh/EDS-BaseLines/Uni-Detect/utils/tokens_dir")
     merge_dicts_parallel(td, 64, "/home/fatemeh/EDS-BaseLines/Uni-Detect/output/WDC-1m")
