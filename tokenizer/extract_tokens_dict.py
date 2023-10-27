@@ -48,6 +48,7 @@ def get_tokens_dict(
     )
     tokens_dict = {k: v for k, v in aggregated_tokens_counter.items()}
     logging.info(f"Finish getting tokens dict")
+    os.makedirs(output_path, exist_ok=True)
     with open(os.path.join(output_path, "tokens_dict.pkl"), "wb") as f:
         pickle.dump(tokens_dict, f)
     return tokens_dict

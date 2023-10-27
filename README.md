@@ -27,13 +27,13 @@ Inside the output directory `output/DGov-141`, the `output/DGov-141/test_path.pk
 Furthermore, the `output/DGov-141/tokens/tokens_dict.pkl` file is created. This file contains the token dictionary for the tokenized datalake.
 
 The Uni-Detect algorithm can solve the following tasks:
-1. Functional Dependency Violation Detection
+1. Functional Dependency Violation Detection:
 `make fd-test`
-2. Numerical Outlier Detection
+2. Numerical Outlier Detection:
 `make no-test`
-3. Spelling Error Detection
+3. Spelling Error Detection:
 `make se-test`
-4. Uniqueness Violation Detection
+4. Uniqueness Violation Detection:
 `make uv-test`
 
 Results are stored in the `output/DGov-141` directory and the logs are stored in the `logs` directory.

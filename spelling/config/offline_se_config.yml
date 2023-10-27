@@ -1,7 +1,7 @@
 {
-  'log_path': logs/WDC-limited/offline_se,
+  'log_path': logs/WDC-5m/offline_se,
   'train_pkl_path': output/WDC-5m/path.pkl,
   'file_type': csv,
   'n_cells_limit': 100000,
-  'output_path': output/WDC-limited
+  'output_path': output/WDC-5m
 }

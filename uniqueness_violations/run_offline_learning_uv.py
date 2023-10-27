@@ -23,6 +23,7 @@ logging.basicConfig(
 
 with open(config["train_pkl_path"], "rb") as f:
     train = pickle.load(f)
+    print(train)
     logging.info("train pickle file loaded.")
 
 with open(config["tokens_dict_path"], "rb") as f:

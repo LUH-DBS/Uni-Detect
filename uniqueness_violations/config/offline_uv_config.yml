@@ -1,5 +1,5 @@
 {
-  'log_path': logs/WDC-limited/offline_uv_5m,
+  'log_path': logs/WDC-5m/offline_uv,
   'train_pkl_path': output/WDC-5m/path.pkl,
   'tokens_dict_path': output/WDC-5m/tokens_dict_5m_mrjob.pkl,
   'file_type': csv,

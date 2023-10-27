@@ -1,10 +1,10 @@
 {
   'log_path': logs/test_fd_dgov_141,
   'fd_pkl_path': output/WDC-5m/fd_tables_results_5m.pickle,
-  'tokens_pkl_path':  DGov-141/tokens/tokens_dict.pkl,
-  'test_pkl_path': datasets/DGov-141/test_path.pkl,
+  'tokens_pkl_path':  output/DGov-141/tokens/tokens_dict.pkl,
+  'test_pkl_path': output/DGov-141/test_path.pkl,
   'file_type': csv,
-  'output_path': DGov-141/fd,
+  'output_path': output/DGov-141/fd,
   'ground_truth_available': False,
   'ground_truth_path': 'datasets/DGov-141/aggregated_clean'
 }

@@ -1,6 +1,15 @@
 install:
 	conda env create --file environment.yml
 
+create-agg-datalake:
+	conda run --no-capture-output -n Uni-Detect python utils/create_aggregated_lake.py
+
+create-datalake-path:
+	conda run --no-capture-output -n Uni-Detect python utils/create_train_test_path_pkl.py
+
+create-datalake-token-dict:
+	conda run --no-capture-output -n Uni-Detect python tokenizer/extract_tokens_dict.py tokenizer/config.yml
+
 uninstall:
 	conda remove --name Uni-Detect --all
 
@@ -20,7 +29,7 @@ no-test:
 	conda run --no-capture-output -n Uni-Detect python numeric_outliers/test_no.py numeric_outliers/config/test_no_config.yml
 
 se-offline:
-	conda run --no-capture-output -n Uni-Detect python nspelling/run_offline_learning_se.py spelling/config/offline_se_config.yml
+	conda run --no-capture-output -n Uni-Detect python spelling/run_offline_learning_se.py spelling/config/offline_se_config.yml
 
 se-test:
 	conda run --no-capture-output -n Uni-Detect python spelling/test_se.py spelling/config/test_se_config.yml
@@ -37,4 +46,5 @@ uv-offline:
 uv-test:
 	conda run --no-capture-output -n Uni-Detect python uniqueness_violations/test_uv.py uniqueness_violations/config/test_uv_config.yml
 
-.PHONY: install, uninstall, fd-offline, fd-test, fd-test-mp, no-offline, no-test, se-offline, se-test, se-test-mp, se-test-autodetectdata, uv-offline, uv-test
+.PHONY: install, uninstall, fd-offline, fd-test, fd-test-mp, no-offline, no-test, se-offline, se-test, se-test-mp, se-test-autodetectdata, uv-offline, uv-test, create-agg-datalake, create-datalake-path, create-datalake-token-dict
+

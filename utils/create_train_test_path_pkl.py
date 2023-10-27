@@ -22,16 +22,14 @@ def create_path_pkl(root_path: str, file_type: str, dest_path: str, pkl_file_nam
         for file in files:
             if file.endswith(".{}".format(file_type)):
                 path.append(os.path.join(root, file))
+    os.makedirs(dest_path, exist_ok=True)
     with open(os.path.join(dest_path, pkl_file_name), "wb") as f:
         pickle.dump(path, f)
 
 
 if __name__ == "__main__":
-    # train_root_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/aggregated_kaggle_lake"
-    test_root_path = (
-        "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/aggregated_dirty"
-    )
+    test_root_path = "datasets/DGov-141/aggregated_dirty"
     file_type = "csv"
-    dest_path = "/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/"
-    # create_path_pkl(train_root_path, file_type, dest_path, "train_path.pkl")
+    dest_path = "output/DGov-141/"
+
     create_path_pkl(test_root_path, file_type, dest_path, "test_path.pkl")

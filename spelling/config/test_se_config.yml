@@ -1,9 +1,9 @@
 {
-  'log_path': Log/test_se_dgov_141,
-  'se_pkl_path': /home/fatemeh/results/Uni-Detect/output/WDC-5m/se_tables_results_5m.pickle,
-  'test_pkl_path': /home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/test_path.pkl, 
+  'log_path': logs/test_se_dgov_141,
+  'se_pkl_path': output/WDC-5m/se_tables_results_5m.pickle,
+  'test_pkl_path': output/DGov-141/test_path.pkl, 
   'file_type': csv,
-  'output_path': /home/fatemeh/results-aug/Uni-Detect/DGov-141/se,
+  'output_path': output/DGov-141/se,
   'ground_truth_available': True,
-  'ground_truth_path': '/home/fatemeh/EDS-BaseLines/Uni-Detect/datasets/DGov-141/aggregated_clean'
+  'ground_truth_path': 'datasets/DGov-141/aggregated_clean'
 }
