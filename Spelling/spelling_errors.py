@@ -37,6 +37,8 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
     :param column: pandas series
     :return: tuple with the minimum pairwise distance, the index of the first value and the index of the second value and the average difference in tokens
     """
+    if column.unique().shape[0] == 1:
+        return 0, 0, 0, 0
     t0 = time.time()
     transformed_col = column.to_numpy().reshape(-1, 1)
     try:
@@ -46,7 +48,6 @@ def get_mpd(column: pd.Series) -> tuple[float, int, int, float]:
         return None, None, None, None
     sdm = squareform(distance_matrix)
     np.nan_to_num(sdm, np.inf)
-    # if sdm.sum().sum() != 0:
     sdm[sdm == 0] = np.inf
     mpd = np.nanmin(sdm)
     idx = np.unravel_index(int(sdm.argmin()), sdm.shape)
